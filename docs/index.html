@@ -7,269 +7,288 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="斛兵来信">
-<meta name="theme-color" content="#005BAC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#005BAC">
 <link rel="manifest" href="manifest.json">
-<title>斛兵来信 - 合工大通知</title>
+<title>斛兵来信</title>
 <style>
-/* ============ Theme ============ */
 :root {
-  --primary: #005BAC; --primary-light: #e8f0fa;
-  --comp: #e85d04; --comp-light: #fff3eb;
-  --holiday: #2d6a4f; --holiday-light: #edf7f2;
-  --bg: #f0f2f5; --card: #fff; --text: #1a1a1a;
-  --text2: #666; --text3: #999; --border: #e8e8e8;
-  --shadow: 0 1px 3px rgba(0,0,0,.06);
-  --radius: 14px;
+  --primary: #005BAC; --primary-light: #0078D4;
+  --brand-gradient: linear-gradient(135deg, #003D7A 0%, #005BAC 40%, #0078D4 100%);
+  --comp: #E8550C; --comp-light: #FFF3EB;
+  --holiday: #1B7A4A; --holiday-light: #EDF7F2;
+  --bg: #F2F3F7; --card: #FFFFFF; --text: #1A1C1E; --text2: #5F6368; --text3: #9AA0A6;
+  --border: #E8EAED; --shadow-sm: 0 1px 2px rgba(0,0,0,.04); --shadow-md: 0 2px 12px rgba(0,0,0,.06); --shadow-lg: 0 8px 24px rgba(0,0,0,.08);
+  --radius-sm: 12px; --radius: 18px; --radius-lg: 24px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1117; --card: #161b22; --text: #e6edf3;
-    --text2: #8b949e; --text3: #6e7681; --border: #30363d;
-    --shadow: 0 1px 3px rgba(0,0,0,.3);
-    --primary-light: #1a3050; --comp-light: #2a1a10; --holiday-light: #1a2a20;
+    --bg: #0F1115; --card: #1B1E24; --text: #E8EAED; --text2: #9AA0A6; --text3: #5F6368;
+    --border: #2D3138; --shadow-sm: 0 1px 2px rgba(0,0,0,.2); --shadow-md: 0 2px 12px rgba(0,0,0,.3); --shadow-lg: 0 8px 24px rgba(0,0,0,.4);
+    --brand-gradient: linear-gradient(135deg, #001D3D 0%, #003166 40%, #003D7A 100%);
+    --comp-light: #2A1A10; --holiday-light: #162820;
   }
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;min-height:100vh;padding-bottom:calc(80px + var(--safe-bottom))}
 
-/* ============ Header ============ */
-.header{position:sticky;top:0;z-index:100;background:var(--primary);padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top, 0px));display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.header .left{display:flex;align-items:center;gap:8px}
-.header .logo{font-size:20px}
-.header h1{font-size:17px;font-weight:600;color:#fff;letter-spacing:.5px}
-.header .date{font-size:11px;color:rgba(255,255,255,.65);margin-top:1px}
-.header .header-actions{display:flex;gap:4px}
-.header .hdr-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+* { margin:0; padding:0; box-sizing:border-box }
+html { scroll-behavior:smooth; -webkit-tap-highlight-color:transparent }
+body { font-family:var(--font); background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden; min-height:100vh; padding-bottom:calc(72px + var(--safe-bottom)); transition:background .3s,color .3s }
+a { color:var(--primary); text-decoration:none }
 
-/* ============ Pull to refresh ============ */
-.pull-indicator{text-align:center;padding:0;color:var(--text3);font-size:13px;overflow:hidden;transition:max-height .3s;max-height:0}
-.pull-indicator.show{max-height:44px;padding:12px}
-.pull-indicator .spinner-sm{display:inline-block;width:18px;height:18px;border:2px solid #ddd;border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ===== Hero Header ===== */
+.hero { position:relative; background:var(--brand-gradient); padding:16px 16px 32px; padding-top:calc(16px + env(safe-area-inset-top, 0px)); overflow:hidden }
+.hero::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:24px; background:var(--bg); border-radius:24px 24px 0 0 }
+.hero-top { display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1 }
+.hero-brand { display:flex; align-items:center; gap:10px }
+.hero-logo { width:44px; height:44px; background:rgba(255,255,255,.18); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.15) }
+.hero-title { color:#fff; font-size:20px; font-weight:700; letter-spacing:.3px; line-height:1.2 }
+.hero-sub { color:rgba(255,255,255,.65); font-size:12px; font-weight:400; margin-top:1px }
+.hero-actions { display:flex; gap:6px; position:relative; z-index:1 }
+.hero-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.15); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.12); color:#fff; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s }
+.hero-btn:active { transform:scale(.92); background:rgba(255,255,255,.25) }
 
-/* ============ Stats ============ */
-.stats-bar{display:flex;padding:12px 16px;gap:10px}
-.stat-card{flex:1;background:var(--card);border-radius:var(--radius);padding:12px 8px;text-align:center;box-shadow:var(--shadow)}
-.stat-card .num{font-size:22px;font-weight:700}
-.stat-card .num.comp{color:var(--comp)}
-.stat-card .num.holiday{color:var(--holiday)}
-.stat-card .label{font-size:10px;color:var(--text2);margin-top:2px}
+/* ===== Glass Stats ===== */
+.stats-row { display:flex; gap:10px; margin-top:16px; position:relative; z-index:2 }
+.stat-item { flex:1; background:rgba(255,255,255,.12); backdrop-filter:blur(12px); border-radius:var(--radius-sm); padding:14px 10px; text-align:center; border:1px solid rgba(255,255,255,.1); transition:transform .15s }
+.stat-item:active { transform:scale(.96) }
+.stat-num { font-size:28px; font-weight:800; color:#fff; letter-spacing:-1px; line-height:1 }
+.stat-num.comp { color:#FFB088 }
+.stat-num.holiday { color:#8FE0B8 }
+.stat-date { font-size:13px; color:#fff; font-weight:600; margin-top:2px }
+.stat-label { font-size:10px; color:rgba(255,255,255,.6); margin-top:2px; font-weight:500 }
 
-/* ============ Tabs ============ */
-.tabs-scroll{overflow-x:auto;white-space:nowrap;padding:0 16px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.tabs-scroll::-webkit-scrollbar{display:none}
-.tabs-inner{display:inline-flex;gap:6px}
-.tab{padding:7px 14px;border-radius:18px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:var(--card);color:var(--text2);box-shadow:var(--shadow);transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
-.tab.active.comp-tab{background:var(--comp);color:#fff}
-.tab.active.holiday-tab{background:var(--holiday);color:#fff}
+/* ===== Section header ===== */
+.section { padding:0 16px; margin-top:20px }
+.section-title { font-size:12px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px }
 
-/* ============ Date group ============ */
-.date-group{margin:0 16px 12px}
-.date-group-label{font-size:12px;font-weight:600;color:var(--text3);padding:8px 0 4px;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
-.date-group-label::after{content:'';flex:1;height:1px;background:var(--border)}
+/* ===== Pill Tabs ===== */
+.pills-wrap { overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:0 16px }
+.pills-wrap::-webkit-scrollbar { display:none }
+.pills { display:inline-flex; gap:8px; padding:4px 0 }
+.pill { padding:7px 16px; border-radius:20px; font-size:13px; font-weight:500; border:none; cursor:pointer; background:var(--card); color:var(--text2); box-shadow:var(--shadow-sm); transition:all .2s cubic-bezier(.4,0,.2,1); white-space:nowrap; display:inline-flex; align-items:center; gap:4px }
+.pill:active { transform:scale(.94) }
+.pill.on-comp { background:var(--comp); color:#fff; box-shadow:0 4px 12px rgba(232,85,12,.3); transform:scale(1.02) }
+.pill.on-holiday { background:var(--holiday); color:#fff; box-shadow:0 4px 12px rgba(27,122,74,.3); transform:scale(1.02) }
 
-/* ============ Cards ============ */
-.list{padding:0 16px 8px}
-.card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:all .15s;border-left:4px solid transparent;position:relative;overflow:hidden}
-.card:active{transform:scale(.985);background:var(--card)}
-.card.comp-card{border-left-color:var(--comp)}
-.card.holiday-card{border-left-color:var(--holiday)}
-.card .card-head{display:flex;align-items:flex-start;gap:8px;padding-right:24px}
-.card .emoji{font-size:15px;flex-shrink:0;margin-top:1px}
-.card .title{font-size:14px;font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .meta{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;color:var(--text3);flex-wrap:wrap}
-.card .meta .tag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500}
-.card .meta .tag.comp-tag{background:var(--comp-light);color:var(--comp)}
-.card .meta .tag.holiday-tag{background:var(--holiday-light);color:var(--holiday)}
-.card .summary{font-size:12px;color:var(--text2);margin-top:4px;display:none;line-height:1.5}
-.card.expanded .summary{display:block}
-.card .arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text3);transition:transform .2s}
-.card.expanded .arrow{transform:translateY(-50%) rotate(90deg)}
-.card .detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.card.expanded .detail{display:block}
-.card .detail .row{margin-bottom:6px;font-size:12px;color:var(--text2)}
-.card .detail .row span{color:var(--text3);margin-right:4px}
-.card .detail .link-btn{display:inline-block;margin-top:4px;padding:7px 14px;background:var(--primary);color:#fff;border-radius:8px;font-size:12px;text-decoration:none;font-weight:500}
-.card .detail .link-btn:active{opacity:.8}
+/* ===== Date Group ===== */
+.date-header { display:flex; align-items:center; gap:8px; padding:16px 16px 8px }
+.date-dot { width:8px; height:8px; border-radius:50%; background:var(--primary) }
+.date-label { font-size:13px; font-weight:600; color:var(--text); letter-spacing:.2px }
 
-/* ============ Search ============ */
-.search-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:200;padding:16px;padding-top:calc(16px + env(safe-area-inset-top, 0px))}
-.search-overlay.show{display:block}
-.search-box{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.search-box input{flex:1;padding:11px 14px;border-radius:12px;border:2px solid var(--border);font-size:14px;outline:none;background:var(--card);color:var(--text);transition:border-color .2s}
-.search-box input:focus{border-color:var(--primary)}
-.search-box .cancel{background:none;border:none;font-size:14px;color:var(--primary);cursor:pointer;white-space:nowrap;padding:8px}
-.search-hint{text-align:center;padding:30px 0;color:var(--text3)}
-.search-hint .icon{font-size:40px;margin-bottom:8px}
-.search-empty{text-align:center;padding:40px 16px;color:var(--text3)}
+/* ===== Cards ===== */
+.feed { padding:0 16px }
+.card { background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:10px; box-shadow:var(--shadow-md); cursor:pointer; transition:all .2s cubic-bezier(.4,0,.2,1); position:relative; overflow:hidden; border:1px solid var(--border) }
+.card:active { transform:scale(.975); box-shadow:var(--shadow-sm) }
+.card.comp { border-left:3px solid var(--comp) }
+.card.holiday { border-left:3px solid var(--holiday) }
+.card-head { display:flex; align-items:flex-start; gap:10px; padding-right:20px }
+.card-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; margin-top:1px }
+.card-icon.comp-bg { background:var(--comp-light) }
+.card-icon.holiday-bg { background:var(--holiday-light) }
+.card-title { font-size:14px; font-weight:600; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color:var(--text) }
+.card-meta { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap }
+.card-date { font-size:11px; color:var(--text3); font-weight:500 }
+.card-tag { display:inline-block; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:600; letter-spacing:.3px }
+.card-tag.comp-tag { background:var(--comp-light); color:var(--comp) }
+.card-tag.holiday-tag { background:var(--holiday-light); color:var(--holiday) }
+.card-source { font-size:10px; color:var(--text3) }
+.card-chevron { position:absolute; right:14px; top:50%; transform:translateY(-50%); width:20px; height:20px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text3); transition:transform .25s }
+.card.expanded .card-chevron { transform:translateY(-50%) rotate(90deg); background:var(--primary); color:#fff }
+.card-summary { display:none; font-size:12px; color:var(--text2); line-height:1.6; margin-top:10px; padding-top:10px; border-top:1px solid var(--border) }
+.card.expanded .card-summary { display:block }
+.card-detail { display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border) }
+.card.expanded .card-detail { display:block }
+.detail-row { margin-bottom:6px; font-size:12px; color:var(--text2) }
+.detail-row .dl { color:var(--text3); margin-right:4px; font-size:11px }
+.card-link { display:inline-flex; align-items:center; gap:4px; margin-top:8px; padding:8px 16px; background:var(--primary); color:#fff; border-radius:20px; font-size:12px; font-weight:600; text-decoration:none; transition:all .15s }
+.card-link:active { opacity:.8; transform:scale(.96) }
 
-/* ============ Empty ============ */
-.empty-state{text-align:center;padding:40px 16px;color:var(--text3)}
-.empty-state .icon{font-size:44px;margin-bottom:8px}
+/* ===== Pull to refresh ===== */
+.pull-bar { text-align:center; overflow:hidden; max-height:0; transition:max-height .3s }
+.pull-bar.active { max-height:48px; padding:12px }
+.pull-spin { display:inline-block; width:20px; height:20px; border:2px solid #ddd; border-top-color:var(--primary); border-radius:50%; animation:spin .7s linear infinite }
+@keyframes spin { to { transform:rotate(360deg) } }
 
-/* ============ Bottom nav ============ */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);display:flex;border-top:1px solid var(--border);z-index:100;padding-bottom:var(--safe-bottom);box-shadow:0 -1px 4px rgba(0,0,0,.04)}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 0 5px;font-size:10px;color:var(--text3);border:none;background:none;cursor:pointer;transition:color .2s}
-.nav-item .nav-icon{font-size:20px;margin-bottom:1px}
-.nav-item.active{color:var(--primary)}
+/* ===== Bottom Nav ===== */
+.tab-bar { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border); display:flex; z-index:100; padding:0 16px; padding-bottom:var(--safe-bottom); box-shadow:0 -2px 12px rgba(0,0,0,.04) }
+.tab-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 0 6px; border:none; background:none; cursor:pointer; color:var(--text3); transition:all .2s; position:relative }
+.tab-item .tb-icon { font-size:21px; transition:transform .2s }
+.tab-item .tb-label { font-size:10px; font-weight:500; margin-top:2px }
+.tab-item.active { color:var(--primary) }
+.tab-item.active .tb-icon { transform:translateY(-1px) }
+.tab-item.active::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:24px; height:3px; background:var(--primary); border-radius:0 0 3px 3px }
 
-/* ============ About page ============ */
-.about-page{display:none;padding:20px 16px}
-.about-page.show{display:block}
-.about-card{background:var(--card);border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--shadow)}
-.about-card .logo{font-size:52px;margin-bottom:10px}
-.about-card h2{font-size:17px;margin-bottom:4px;color:var(--text)}
-.about-card .ver{font-size:11px;color:var(--text3);margin-bottom:14px}
-.about-card p{font-size:12px;color:var(--text2);line-height:1.8}
-.about-card a{color:var(--primary)}
-.dark-toggle{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;background:var(--bg);border:none;color:var(--text);font-size:13px;cursor:pointer;margin-top:12px}
+/* ===== Search Overlay ===== */
+.search-overlay { display:none; position:fixed; inset:0; background:var(--bg); z-index:300; padding:16px; padding-top:calc(16px + env(safe-area-inset-top, 0px)) }
+.search-overlay.show { display:block; animation:fadeIn .2s }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+.search-bar { display:flex; align-items:center; gap:8px; background:var(--card); border-radius:var(--radius); padding:8px 14px; box-shadow:var(--shadow-md); border:2px solid var(--primary); transition:all .2s }
+.search-bar input { flex:1; border:none; background:transparent; font-size:15px; color:var(--text); outline:none; font-family:var(--font) }
+.search-bar .cancel { background:none; border:none; font-size:14px; font-weight:600; color:var(--primary); cursor:pointer; white-space:nowrap; padding:6px 4px }
+.search-empty { text-align:center; padding:48px 16px; color:var(--text3) }
+.search-empty .se-icon { font-size:44px; margin-bottom:10px; display:block }
 
-/* ============ Toast ============ */
-.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none}
-.toast.show{opacity:1}
+/* ===== Empty state ===== */
+.empty { text-align:center; padding:48px 16px; color:var(--text3) }
+.empty .em-icon { font-size:48px; margin-bottom:10px; display:block }
+.empty .em-text { font-size:14px; font-weight:500 }
 
-/* ============ Loading ============ */
-.loading{text-align:center;padding:20px;color:var(--text3)}
+/* ===== About ===== */
+.about-page { display:none; padding:20px 16px }
+.about-page.show { display:block; animation:fadeIn .25s }
+.about-card { background:var(--card); border-radius:var(--radius-lg); padding:28px 20px; text-align:center; box-shadow:var(--shadow-md); border:1px solid var(--border) }
+.about-card .alogo { font-size:56px; margin-bottom:12px }
+.about-card h2 { font-size:20px; font-weight:700; margin-bottom:4px }
+.about-card .aver { font-size:12px; color:var(--text3); margin-bottom:18px }
+.about-card p { font-size:13px; color:var(--text2); line-height:2 }
+.dark-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:24px; background:var(--bg); border:1px solid var(--border); color:var(--text); font-size:13px; font-weight:500; cursor:pointer; margin-top:14px; transition:all .15s }
+.dark-btn:active { transform:scale(.95) }
 
-/* ============ Active tab highlight scroller ============ */
-.active-scroll{scroll-margin:8px}
+/* ===== Toast ===== */
+.toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:#1F1F1F; color:#fff; padding:10px 20px; border-radius:24px; font-size:12px; font-weight:600; z-index:400; opacity:0; transition:opacity .3s; pointer-events:none; box-shadow:0 8px 24px rgba(0,0,0,.2) }
+.toast.show { opacity:1 }
 
-/* ============ iOS safe area ============ */
+/* ===== iOS safe area patches ===== */
 @supports(padding:max(0px)){
-  .header{padding-top:max(12px,env(safe-area-inset-top))}
-  body{padding-bottom:max(80px,calc(80px + env(safe-area-inset-bottom)))}
+  .hero { padding-top:max(16px,env(safe-area-inset-top)) }
+  body { padding-bottom:max(72px,calc(72px + env(safe-area-inset-bottom))) }
+  .tab-bar { padding-bottom:max(0px,env(safe-area-inset-bottom)) }
 }
 </style>
 </head>
 <body>
 
-<!-- 顶部 -->
-<div class="header">
-  <div class="left">
-    <span class="logo">📬</span>
-    <div>
-      <h1>斛兵来信</h1>
-      <span class="date" id="headerDate">加载中…</span>
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-brand">
+      <div class="hero-logo">📬</div>
+      <div>
+        <div class="hero-title">斛兵来信</div>
+        <div class="hero-sub">合工大通知 · 实时更新</div>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button class="hero-btn" onclick="refreshData()" aria-label="刷新">🔄</button>
+      <button class="hero-btn" onclick="toggleSearch()" aria-label="搜索">🔍</button>
     </div>
   </div>
-  <div class="header-actions">
-    <button class="hdr-btn" onclick="refreshData()" title="刷新">🔄</button>
-    <button class="hdr-btn" onclick="toggleSearch()" title="搜索">🔍</button>
+  <div class="stats-row">
+    <div class="stat-item" onclick="switchTab('competition','')">
+      <div class="stat-num comp" id="compCount">-</div>
+      <div class="stat-label">🏆 竞赛通知</div>
+    </div>
+    <div class="stat-item" onclick="switchTab('holiday','')">
+      <div class="stat-num holiday" id="holidayCount">-</div>
+      <div class="stat-label">📅 节假日通知</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-date" id="updateDay">--</div>
+      <div class="stat-label">📆 更新日期</div>
+    </div>
   </div>
 </div>
 
-<!-- 下拉刷新 -->
-<div class="pull-indicator" id="pullIndicator"><span class="spinner-sm"></span> 刷新中…</div>
+<!-- Pull to refresh -->
+<div class="pull-bar" id="pullBar"><div class="pull-spin"></div></div>
 
-<!-- 统计 -->
-<div class="stats-bar" id="statsBar">
-  <div class="stat-card"><div class="num comp" id="compCount">-</div><div class="label">🏆 竞赛通知</div></div>
-  <div class="stat-card"><div class="num holiday" id="holidayCount">-</div><div class="label">📅 节假日通知</div></div>
-  <div class="stat-card"><div class="num" id="updateDay" style="color:var(--primary)">-</div><div class="label">📆 更新于</div></div>
+<!-- Category pills -->
+<div class="pills-wrap" id="pillsArea">
+  <div class="pills" id="pillsInner"></div>
 </div>
 
-<!-- Tab 滚动条 -->
-<div class="tabs-scroll" id="tabsArea">
-  <div class="tabs-inner">
-    <button class="tab active comp-tab" onclick="switchTab('competition','')">🏆 全部竞赛</button>
-    <button class="tab comp-tab" data-sub="学科竞赛" onclick="switchTab('competition','学科竞赛')">🏅 学科竞赛</button>
-    <button class="tab comp-tab" data-sub="创新创业" onclick="switchTab('competition','创新创业')">💡 创新创业</button>
-    <button class="tab comp-tab" data-sub="课题申报" onclick="switchTab('competition','课题申报')">📋 课题申报</button>
-    <button class="tab comp-tab" data-sub="讲座报告" onclick="switchTab('competition','讲座报告')">🎙️ 讲座报告</button>
-    <button class="tab holiday-tab" onclick="switchTab('holiday','')">📅 全部节假日</button>
-    <button class="tab holiday-tab" data-sub="放假通知" onclick="switchTab('holiday','放假通知')">🎉 放假通知</button>
-    <button class="tab holiday-tab" data-sub="假期安排" onclick="switchTab('holiday','假期安排')">📆 假期安排</button>
-    <button class="tab holiday-tab" data-sub="开学返校" onclick="switchTab('holiday','开学返校')">🏫 开学返校</button>
-  </div>
+<!-- Feed -->
+<div id="feedArea">
+  <div class="feed" id="noticeList"></div>
 </div>
 
-<!-- 通知列表 -->
-<div class="list" id="noticeList"></div>
-
-<!-- 关于 -->
+<!-- About -->
 <div class="about-page" id="aboutPage">
   <div class="about-card">
-    <div class="logo">📬</div>
-    <h2>斛兵来信 v2.0</h2>
-    <div class="ver">合工大通知监控系统</div>
+    <div class="alogo">📬</div>
+    <h2>斛兵来信</h2>
+    <div class="aver">v2.0 · 瑞幸风格 · 合工大通知监控</div>
     <p>
-      🏫 来源：合肥工业大学新闻网<br>
+      🏫 合肥工业大学新闻网<br>
       🏆 竞赛 · 节假日自动推送<br>
-      📱 PushPlus 微信通知<br><br>
-      深色模式 · 子分类筛选<br>
-      周报统计 · 下拉刷新
+      📱 PushPlus 微信实时通知<br>
+      深色模式 · 子分类 · 周报
     </p>
-    <button class="dark-toggle" onclick="toggleDarkMode()">
-      <span id="darkIcon">🌙</span> <span id="darkLabel">深色模式</span>
-    </button>
-    <p style="margin-top:10px">
+    <p style="margin-top:8px">
       <a href="https://news.hfut.edu.cn/tzgg2.htm" target="_blank">🔗 访问官网</a>
     </p>
+    <button class="dark-btn" onclick="toggleDarkMode()">
+      <span id="darkIcon">🌙</span> <span id="darkLabel">深色模式</span>
+    </button>
   </div>
 </div>
 
-<!-- 底部 -->
-<div class="bottom-nav">
-  <button class="nav-item active" onclick="showPage('home')"><span class="nav-icon">🏠</span>首页</button>
-  <button class="nav-item" onclick="switchTab('competition','');showPage('home')"><span class="nav-icon">🏆</span>竞赛</button>
-  <button class="nav-item" onclick="switchTab('holiday','');showPage('home')"><span class="nav-icon">📅</span>节假</button>
-  <button class="nav-item" onclick="showPage('about')"><span class="nav-icon">⚙</span>关于</button>
+<!-- Bottom tab bar -->
+<div class="tab-bar">
+  <button class="tab-item active" id="nav0" onclick="showPage('home')">
+    <span class="tb-icon">🏠</span><span class="tb-label">首页</span>
+  </button>
+  <button class="tab-item" id="nav1" onclick="switchTab('competition','');showPage('home')">
+    <span class="tb-icon">🏆</span><span class="tb-label">竞赛</span>
+  </button>
+  <button class="tab-item" id="nav2" onclick="switchTab('holiday','');showPage('home')">
+    <span class="tb-icon">📅</span><span class="tb-label">节假</span>
+  </button>
+  <button class="tab-item" id="nav3" onclick="showPage('about')">
+    <span class="tb-icon">⚙</span><span class="tb-label">关于</span>
+  </button>
 </div>
 
-<!-- 搜索遮罩 -->
+<!-- Search overlay -->
 <div class="search-overlay" id="searchOverlay">
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="搜索通知标题、标签…" oninput="doSearch()" autocomplete="off">
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索标题、标签…" oninput="doSearch()" autocomplete="off">
     <button class="cancel" onclick="toggleSearch()">取消</button>
   </div>
-  <div id="searchArea">
-    <div class="search-hint" id="searchHint"><div class="icon">🔍</div>输入关键词搜索</div>
-    <div class="list" id="searchResults"></div>
-  </div>
+  <div class="feed" id="searchResults" style="margin-top:14px"></div>
 </div>
 
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== State ====================
+// ===== State =====
 let allNotices = [], currentTab = 'competition', currentSub = '', currentPage = 'home';
 let darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-// ==================== Dark mode ====================
+// ===== Dark mode =====
 function applyDark() {
-  document.documentElement.style.setProperty('--bg', darkMode ? '#0d1117' : '#f0f2f5');
-  document.documentElement.style.setProperty('--card', darkMode ? '#161b22' : '#fff');
-  document.documentElement.style.setProperty('--text', darkMode ? '#e6edf3' : '#1a1a1a');
-  document.documentElement.style.setProperty('--text2', darkMode ? '#8b949e' : '#666');
-  document.documentElement.style.setProperty('--text3', darkMode ? '#6e7681' : '#999');
-  document.documentElement.style.setProperty('--border', darkMode ? '#30363d' : '#e8e8e8');
-  document.documentElement.style.setProperty('--shadow', darkMode ? '0 1px 3px rgba(0,0,0,.3)' : '0 1px 3px rgba(0,0,0,.06)');
+  const keys = {
+    '--bg': darkMode ? '#0F1115' : '#F2F3F7',
+    '--card': darkMode ? '#1B1E24' : '#FFFFFF',
+    '--text': darkMode ? '#E8EAED' : '#1A1C1E',
+    '--text2': darkMode ? '#9AA0A6' : '#5F6368',
+    '--text3': darkMode ? '#5F6368' : '#9AA0A6',
+    '--border': darkMode ? '#2D3138' : '#E8EAED',
+    '--brand-gradient': darkMode ? 'linear-gradient(135deg, #001D3D 0%, #003166 40%, #003D7A 100%)' : 'linear-gradient(135deg, #003D7A 0%, #005BAC 40%, #0078D4 100%)',
+    '--comp-light': darkMode ? '#2A1A10' : '#FFF3EB',
+    '--holiday-light': darkMode ? '#162820' : '#EDF7F2',
+  };
+  Object.entries(keys).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
   document.getElementById('darkIcon').textContent = darkMode ? '☀️' : '🌙';
   document.getElementById('darkLabel').textContent = darkMode ? '浅色模式' : '深色模式';
 }
-function toggleDarkMode() { darkMode = !darkMode; applyDark(); }
+function toggleDarkMode() { darkMode = !darkMode; applyDark(); haptic(); }
 applyDark();
 
-// ==================== Haptic ====================
-function haptic(style='light') {
-  try { navigator.vibrate(style==='medium'?15:8); } catch(e) {}
-}
-
-// ==================== Data loading ====================
+// ===== Data =====
 async function loadData() {
   try {
-    const resp = await fetch('data.json?t=' + Date.now());
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
-    allNotices = (data.notices || []).filter(n => n.category === 'competition' || n.category === 'holiday');
+    const r = await fetch('data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    allNotices = (d.notices || []).filter(n => n.category === 'competition' || n.category === 'holiday');
     allNotices.sort((a,b) => b.date.localeCompare(a.date));
-    document.getElementById('headerDate').textContent = '更新于 ' + (data.updated || '--');
   } catch(e) {
-    console.warn('Load failed, using sample', e);
     allNotices = sampleData();
   }
   render();
@@ -281,21 +300,18 @@ function sampleData() {
     {title:"关于举办第二届全球校友创新创业大赛的通知",date:"2026-07-21",link:"#",category:"competition",sub_label:"创新创业",source_tab:"教学科研"},
     {title:"关于组织参加第十五届挑战杯创业计划竞赛的通知",date:"2026-07-13",link:"#",category:"competition",sub_label:"学科竞赛",source_tab:"其他通知"},
     {title:"关于2026年清明节放假安排的通知",date:"2026-04-01",link:"#",category:"holiday",sub_label:"放假通知",source_tab:"其他通知"},
-    {title:"关于做好2026年暑期有关事项的通知",date:"2026-06-20",link:"#",category:"holiday",sub_label:"假期安排",source_tab:"其他通知"},
   ];
 }
 
 async function refreshData() {
-  document.getElementById('pullIndicator').classList.add('show');
-  haptic('medium');
+  document.getElementById('pullBar').classList.add('active'); haptic('medium');
   await loadData();
-  setTimeout(() => {
-    document.getElementById('pullIndicator').classList.remove('show');
-    showToast('已刷新');
-  }, 500);
+  setTimeout(() => { document.getElementById('pullBar').classList.remove('active'); showToast('已刷新'); }, 600);
 }
 
-// ==================== Render ====================
+// ===== Render =====
+const SUB_EMOJI = {'学科竞赛':'🏅','创新创业':'💡','课题申报':'📋','讲座报告':'🎙️','放假通知':'🎉','假期安排':'📆','开学返校':'🏫'};
+
 function render() {
   // Filter
   let filtered = allNotices.filter(n => n.category === currentTab);
@@ -303,61 +319,68 @@ function render() {
   filtered.sort((a,b) => b.date.localeCompare(a.date));
 
   // Stats
-  const compAll = allNotices.filter(n => n.category === 'competition');
-  const holAll = allNotices.filter(n => n.category === 'holiday');
-  document.getElementById('compCount').textContent = compAll.length;
-  document.getElementById('holidayCount').textContent = holAll.length;
+  document.getElementById('compCount').textContent = allNotices.filter(n => n.category === 'competition').length;
+  document.getElementById('holidayCount').textContent = allNotices.filter(n => n.category === 'holiday').length;
   const dates = allNotices.map(n => n.date).sort().reverse();
-  document.getElementById('updateDay').textContent = dates[0] ? dates[0].slice(5) : '-';
+  document.getElementById('updateDay').textContent = dates[0] ? dates[0].slice(5) : '--';
 
-  // Date grouping
+  // Pills
+  renderPills();
+
+  // Cards
   const groups = dateGroups(filtered);
   let html = '';
-
   if (filtered.length === 0) {
-    html = `<div class="empty-state"><span class="icon">📭</span>暂无${currentTab==='competition'?'竞赛':'节假日'}通知</div>`;
+    html = '<div class="empty"><span class="em-icon">📭</span><div class="em-text">暂无通知</div></div>';
   } else {
     for (const [label, items] of Object.entries(groups)) {
-      html += `<div class="date-group"><div class="date-group-label">${label} (${items.length})</div>`;
+      html += '<div class="date-header"><div class="date-dot"></div><div class="date-label">' + label + ' (' + items.length + ')</div></div>';
       for (const n of items) {
         const sub = n.sub_label || '';
+        const cardCls = n.category === 'competition' ? 'comp' : 'holiday';
+        const iconBg = n.category === 'competition' ? 'comp-bg' : 'holiday-bg';
         const tagCls = n.category === 'competition' ? 'comp-tag' : 'holiday-tag';
-        const cardCls = n.category === 'competition' ? 'comp-card' : 'holiday-card';
         const emoji = n.category === 'competition' ? '🏆' : '📅';
         const summary = n.summary || '';
-        html += `<div class="card ${cardCls}" onclick="toggleCard(this)" id="c_${escAttr(n.link||'')}">
-          <div class="card-head"><span class="emoji">${emoji}</span>
-            <span class="title">${escHtml(n.title)}</span>
-          </div>
-          <div class="meta">
-            <span>📆 ${n.date}</span>${sub ? `<span class="tag ${tagCls}">${sub}</span>` : ''}
-            <span>${escHtml(n.source_tab||'')}</span>
-          </div>
-          ${summary ? `<div class="summary">📝 ${escHtml(summary).substring(0,100)}</div>` : ''}
-          <span class="arrow">▶</span>
-          <div class="detail">
-            <div class="row"><span>📝</span> ${escHtml(n.title)}</div>
-            <div class="row"><span>📅</span> 发布时间：${n.date}</div>
-            <div class="row"><span>📂</span> 来源：${escHtml(n.source_tab||'未知')}</div>
-            ${sub ? `<div class="row"><span>🏷️</span> 分类：${sub}</div>` : ''}
-            ${summary ? `<div class="row"><span>📄</span> ${escHtml(summary).substring(0,200)}</div>` : ''}
-            <a href="${escHtml(n.link)}" target="_blank" class="link-btn" onclick="event.stopPropagation();haptic()">🔗 查看官网原文 →</a>
-          </div>
-        </div>`;
+        html += '<div class="card ' + cardCls + '" onclick="toggleCard(this)">' +
+          '<div class="card-head">' +
+            '<div class="card-icon ' + iconBg + '">' + emoji + '</div>' +
+            '<div class="card-title">' + esc(n.title) + '</div>' +
+          '</div>' +
+          '<div class="card-meta">' +
+            '<span class="card-date">📆 ' + n.date + '</span>' +
+            (sub ? '<span class="card-tag ' + tagCls + '">' + (SUB_EMOJI[sub]||'') + ' ' + sub + '</span>' : '') +
+            '<span class="card-source">' + esc(n.source_tab||'') + '</span>' +
+          '</div>' +
+          (summary ? '<div class="card-summary">📝 ' + esc(summary).substring(0, 100) + '</div>' : '') +
+          '<div class="card-chevron">▶</div>' +
+          '<div class="card-detail">' +
+            '<div class="detail-row"><span class="dl">📝</span>' + esc(n.title) + '</div>' +
+            '<div class="detail-row"><span class="dl">📅</span>' + n.date + '</div>' +
+            (sub ? '<div class="detail-row"><span class="dl">🏷️</span>' + sub + '</div>' : '') +
+            (summary ? '<div class="detail-row"><span class="dl">📄</span>' + esc(summary).substring(0, 200) + '</div>' : '') +
+            '<a href="' + esc(n.link) + '" target="_blank" class="card-link" onclick="event.stopPropagation()">查看官网原文 →</a>' +
+          '</div>' +
+        '</div>';
       }
-      html += '</div>';
     }
   }
-
   document.getElementById('noticeList').innerHTML = html;
+}
 
-  // Tab highlights
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => {
-    const tCat = t.classList.contains('comp-tab') ? 'competition' : (t.classList.contains('holiday-tab') ? 'holiday' : '');
-    const tSub = t.dataset.sub || '';
-    if (tCat === currentTab && tSub === currentSub) t.classList.add('active');
-  });
+function renderPills() {
+  const compSubs = ['', '学科竞赛', '创新创业', '课题申报', '讲座报告'];
+  const holSubs = ['', '放假通知', '假期安排', '开学返校'];
+  const subs = currentTab === 'competition' ? compSubs : holSubs;
+  const onCls = currentTab === 'competition' ? 'on-comp' : 'on-holiday';
+  let html = '';
+  for (const s of subs) {
+    const label = s || (currentTab === 'competition' ? '全部竞赛' : '全部节假日');
+    const emoji = SUB_EMOJI[s] || (currentTab === 'competition' ? '🏆' : '📅');
+    const active = s === currentSub;
+    html += '<button class="pill ' + (active ? onCls : '') + '" onclick="switchTab(\'' + currentTab + '\',\'' + s + '\')">' + emoji + ' ' + label + '</button>';
+  }
+  document.getElementById('pillsInner').innerHTML = html;
 }
 
 function dateGroups(notices) {
@@ -366,20 +389,21 @@ function dateGroups(notices) {
   const yesterday = new Date(now - 864e5).toISOString().slice(0,10);
   const weekAgo = new Date(now - 7*864e5).toISOString().slice(0,10);
   const monthAgo = new Date(now - 30*864e5).toISOString().slice(0,10);
-
-  const groups = { '📌 今天': [], '📌 昨天': [], '📌 本周': [], '📌 本月': [], '📌 更早': [] };
+  const groups = {};
   for (const n of notices) {
-    if (n.date === today) groups['📌 今天'].push(n);
-    else if (n.date === yesterday) groups['📌 昨天'].push(n);
-    else if (n.date > weekAgo) groups['📌 本周'].push(n);
-    else if (n.date > monthAgo) groups['📌 本月'].push(n);
-    else groups['📌 更早'].push(n);
+    let k;
+    if (n.date === today) k = '今天';
+    else if (n.date === yesterday) k = '昨天';
+    else if (n.date > weekAgo) k = '本周';
+    else if (n.date > monthAgo) k = '本月';
+    else k = '更早';
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(n);
   }
-  // Remove empty groups
-  return Object.fromEntries(Object.entries(groups).filter(([_,v]) => v.length > 0));
+  return groups;
 }
 
-// ==================== Tab / Page ====================
+// ===== Tab & Page =====
 function switchTab(cat, sub) {
   currentTab = cat; currentSub = sub;
   render(); showPage('home'); haptic();
@@ -390,80 +414,67 @@ function toggleCard(card) { card.classList.toggle('expanded'); haptic(); }
 function showPage(page) {
   currentPage = page;
   const home = page === 'home';
-  ['noticeList','statsBar','tabsArea'].forEach(id => document.getElementById(id).style.display = home ? '' : 'none');
+  document.getElementById('pillsArea').style.display = home ? '' : 'none';
+  document.getElementById('feedArea').style.display = home ? '' : 'none';
   document.getElementById('aboutPage').classList.toggle('show', page === 'about');
-  document.querySelectorAll('.nav-item').forEach((el,i) => {
-    const idxMap = {0:'home',1:'home',2:'home',3:'about'};
-    el.classList.toggle('active', idxMap[i] === page);
+  ['nav0','nav1','nav2','nav3'].forEach((id,i) => {
+    const act = (page==='home'&&i===0) || (page==='about'&&i===3) ||
+               (page==='home'&&i===1&&currentTab==='competition') ||
+               (page==='home'&&i===2&&currentTab==='holiday');
+    document.getElementById(id).classList.toggle('active', act);
   });
+  if (!home && currentPage === 'home') {
+    document.getElementById('nav0').classList.add('active');
+  }
 }
 
-// ==================== Search ====================
+// ===== Search =====
 function toggleSearch() {
   const ov = document.getElementById('searchOverlay');
   const show = ov.classList.toggle('show');
   if (show) {
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').innerHTML = '';
-    document.getElementById('searchHint').style.display = '';
-    setTimeout(() => document.getElementById('searchInput').focus(), 100);
+    setTimeout(() => document.getElementById('searchInput').focus(), 150);
   }
 }
 
 function doSearch() {
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  const hint = document.getElementById('searchHint');
-  const results = document.getElementById('searchResults');
-  if (!q) { results.innerHTML = ''; hint.style.display = ''; return; }
-  hint.style.display = 'none';
-
-  // Local search: title + sub_label + source_tab
+  const el = document.getElementById('searchResults');
+  if (!q) { el.innerHTML = ''; return; }
   const matched = allNotices.filter(n =>
-    n.title.toLowerCase().includes(q) ||
-    (n.sub_label||'').includes(q) ||
-    (n.source_tab||'').toLowerCase().includes(q) ||
-    (n.summary||'').toLowerCase().includes(q)
+    n.title.toLowerCase().includes(q) || (n.sub_label||'').includes(q) ||
+    (n.source_tab||'').toLowerCase().includes(q) || (n.summary||'').toLowerCase().includes(q)
   );
-
   if (!matched.length) {
-    results.innerHTML = `<div class="search-empty"><div class="icon">🔍</div>未找到"${escHtml(q)}"</div>`;
+    el.innerHTML = '<div class="search-empty"><span class="se-icon">🔍</span>未找到"' + esc(q) + '"</div>';
     return;
   }
-
-  results.innerHTML = matched.map(n => {
+  el.innerHTML = matched.map(n => {
     const sub = n.sub_label || '';
-    const tagCls = n.category === 'competition' ? 'comp-tag' : 'holiday-tag';
-    const cardCls = n.category === 'competition' ? 'comp-card' : 'holiday-card';
+    const cls = n.category === 'competition' ? 'comp' : 'holiday';
+    const ibg = n.category === 'competition' ? 'comp-bg' : 'holiday-bg';
+    const tcls = n.category === 'competition' ? 'comp-tag' : 'holiday-tag';
     const emoji = n.category === 'competition' ? '🏆' : '📅';
-    return `<div class="card ${cardCls}" onclick="this.classList.toggle('expanded')">
-      <div class="card-head"><span class="emoji">${emoji}</span><span class="title">${escHtml(n.title)}</span></div>
-      <div class="meta">
-        <span>📆 ${n.date}</span>${sub?`<span class="tag ${tagCls}">${sub}</span>`:''}
-        <span>${escHtml(n.source_tab||'')}</span>
-      </div>
-      <span class="arrow">▶</span>
-      <div class="detail">
-        <div class="row"><span>📝</span> ${escHtml(n.title)}</div>
-        <div class="row"><span>📅</span> ${n.date}</div>
-        ${n.summary?`<div class="row"><span>📄</span> ${escHtml(n.summary).substring(0,200)}</div>`:''}
-        <a href="${escHtml(n.link)}" target="_blank" class="link-btn" onclick="event.stopPropagation()">🔗 查看原文 →</a>
-      </div>
-    </div>`;
+    return '<div class="card ' + cls + '" onclick="this.classList.toggle(\'expanded\')">' +
+      '<div class="card-head"><div class="card-icon ' + ibg + '">' + emoji + '</div><div class="card-title">' + esc(n.title) + '</div></div>' +
+      '<div class="card-meta"><span class="card-date">📆 ' + n.date + '</span>' + (sub?'<span class="card-tag ' + tcls + '">' + sub + '</span>':'') + '<span class="card-source">' + esc(n.source_tab||'') + '</span></div>' +
+      '<div class="card-chevron">▶</div>' +
+      '<div class="card-detail"><div class="detail-row"><span class="dl">📝</span>' + esc(n.title) + '</div><div class="detail-row"><span class="dl">📅</span>' + n.date + '</div>' + (n.summary?'<div class="detail-row"><span class="dl">📄</span>' + esc(n.summary).substring(0,200) + '</div>':'') + '<a href="' + esc(n.link) + '" target="_blank" class="card-link" onclick="event.stopPropagation()">查看原文 →</a></div>' +
+    '</div>';
   }).join('');
 }
 
-// ==================== Utils ====================
-function escHtml(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
-function escAttr(s) { return (s||'').replace(/[^a-zA-Z0-9]/g,'_'); }
-function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
+// ===== Utils =====
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+function haptic(s) { try { navigator.vibrate(s==='medium'?15:6); } catch(e) {} }
+function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
 
-// ==================== PWA ====================
+// ===== PWA =====
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 
-// ==================== Init ====================
+// ===== Launch =====
 loadData(); showPage('home');
 </script>
 </body>
