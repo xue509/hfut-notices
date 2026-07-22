@@ -1,51 +1,25 @@
- name: Notice Monitor
-
+name: Notice Monitor
   on:
     schedule:
-      - cron: '0 */2 * * *'
+      - cron: "0 */2 * * *"
     workflow_dispatch:
-
   jobs:
     scrape:
       runs-on: ubuntu-latest
       permissions:
         contents: write
-
       steps:
         - uses: actions/checkout@v4
-
         - uses: actions/setup-python@v5
           with:
-            python-version: '3.11'
-
-        - name: Install dependencies
-          run: pip install requests beautifulsoup4 lxml pyyaml
-
-        - name: Run monitor
+            python-version: "3.11"
+        - run: pip install requests beautifulsoup4 lxml
+        - run: python run_cloud.py
           env:
             PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
-          run: |
-            cat > config.yaml << 'EOF'
-            scraper:
-              base_url: "https://news.hfut.edu.cn/tzgg2.htm"
-              pages: 2
-              timeout: 15
-            classifier:
-              competition_keywords: ["大赛","竞赛","挑战杯","创新创业","选拔赛","互联网+","比赛","全国大学生","中国大学
-  生","学科竞赛","创新大赛","技能大赛","专项赛"]
-              holiday_keywords: ["放假","假期","暑期","寒假","暑假","节假日","调休","清明","五一","端午","中秋","国庆","
-  元旦","春节","劳动节","开学","返校","报到注册","校历"]
-            pusher:
-              mode: "pushplus"
-              pushplus:
-                token: "${PUSHPLUS_TOKEN}"
-            EOF
-            python run_cloud.py
-
-        - name: Commit updates
-          run: |
+        - run: |
             git config user.name "HFUT Bot"
             git config user.email "bot@hfut.local"
             git add docs/ || true
-            git diff --cached --quiet || git commit -m "Update notices"
-            git push
+            git diff --cached --quiet || git commit -m "update" || true
+            git push || true
