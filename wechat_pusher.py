@@ -42,40 +42,46 @@ def format_push_message(category: str, notices: list[dict]) -> dict:
     emoji = emoji_map.get(category, "📌")
     label = label_map.get(category, "通知")
     today = datetime.now().strftime("%Y-%m-%d")
+    sub_emoji_map = {"学科竞赛": "🏅", "创新创业": "💡", "课题申报": "📋",
+                     "讲座报告": "🎙️", "放假通知": "🎉", "假期安排": "📆", "开学返校": "🏫"}
 
     title = f"{emoji} 合工大{label} ({today})"
 
     lines = [
         f"## {emoji} 合工大{label}",
         f"",
-        f"**更新时间**: {today}  ",
-        f"**数量**: {len(notices)} 条",
+        f"**更新时间**: {today}  |  **数量**: {len(notices)} 条",
         f"",
         "---",
         "",
     ]
 
     for i, n in enumerate(notices, 1):
-        lines.append(f"**{i}.** [{n['title']}]({n['link']})")
+        sub = n.get("sub_label", "")
+        sub_tag = f" `{sub_emoji_map.get(sub,'')}{sub}`" if sub else ""
+        summary = n.get("summary", "")
+
+        lines.append(f"**{i}.** [{n['title']}]({n['link']}){sub_tag}")
         lines.append(f"> 📅 {n['date']}  |  来源: {n.get('source_tab', '')}")
+        if summary:
+            # 摘要最多80字
+            short = summary[:80] + ("…" if len(summary) > 80 else "")
+            lines.append(f"> 📝 {short}")
         lines.append("")
 
     lines.append("---")
     lines.append("")
     lines.append("📬 *本消息由合工大通知监控系统自动推送*")
-    lines.append(f"🔗 [查看官网](https://news.hfut.edu.cn/tzgg2.htm)")
+    lines.append(f"📱 [打开 App](https://xue509.github.io/hfut-notices/) | [查看官网](https://news.hfut.edu.cn/tzgg2.htm)")
 
     content = "\n".join(lines)
 
-    # 微信 Markdown 消息有长度限制（约 2048 字符）
+    # 截断处理
     if len(content) > 1800:
-        # 截断处理
-        lines = lines[:12]  # 保留标题和前10条
+        lines = lines[:15]
         lines.append("")
-        lines.append(f"> ⚠️ 内容较多，已截断显示。共 {len(notices)} 条新通知，请查看官网获取完整列表。")
-        lines.append("")
-        lines.append("---")
-        lines.append(f"🔗 [查看官网](https://news.hfut.edu.cn/tzgg2.htm)")
+        lines.append(f"> ⚠️ 内容较多，已截断。共 {len(notices)} 条新通知。")
+        lines.append(f"> 📱 [打开 App 查看全部](https://xue509.github.io/hfut-notices/)")
         content = "\n".join(lines)
 
     return {"title": title, "content": content}
