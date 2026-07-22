@@ -1,6 +1,6 @@
 {
-  "updated": "2026-07-22 12:16:51",
-  "total": 12,
+  "updated": "2026-07-22 20:24:45",
+  "total": 80,
   "notices": [
     {
       "title": "关于举办第二届合肥工业大学全球校友创新创业大赛的通知",
@@ -25,9 +25,7 @@
       "source_tab": "",
       "raw_date": "2026年07月21日",
       "sub_label": "课题申报",
-      "category": "competition",
-      "pushed": false,
-      "summary": "提示：您当前ip并非校内地址，该信息仅允许校内地址访问 首页 关闭此页"
+      "category": "competition"
     },
     {
       "title": "国家科技重大专项：煤炭重大专项2027年度公开项目申报指南",
@@ -36,9 +34,7 @@
       "source_tab": "",
       "raw_date": "2026年07月17日",
       "sub_label": "课题申报",
-      "category": "competition",
-      "pushed": false,
-      "summary": "通知公告 通知公告 您的位置： 首页 通知公告 国家科技重大专项：煤炭重大专项2027年度公开项目申报指南 发布时间：2026-07-17 各有关单位、各位老师： 国家能源投资集团有限责任公司发布煤炭重大专项 202 7 年度公开项目申报指南。请各有关单位、各位老师仔细研读申报通知和指南，明确申请资格和形式审查条件要求等，积极联系相关单位联合申报。现 将有关事宜通知如下： 一、项目申报要求 1. …"
+      "category": "competition"
     },
     {
       "title": "国家科技重大专项：智能电网专项基础支撑自主化关键技术项目申报指南征求意见",
@@ -47,9 +43,7 @@
       "source_tab": "",
       "raw_date": "2026年07月17日",
       "sub_label": "课题申报",
-      "category": "competition",
-      "pushed": false,
-      "summary": "通知公告 通知公告 您的位置： 首页 通知公告 国家科技重大专项：智能电网专项基础支撑自主化关键技术项目申报指南征求意见 发布时间：2026-07-17 各相关单位、各位老师： 智能电网国家科技重大专项管理办公室对智能电网国家科技重大专项基础支撑自主化关键技术项目申报指南向社会征求意见。修改意见请于7月21日上午11点之前发至电子邮箱：kyyzrb@hfut.edu.cn。 请登录系统，在“公开公…"
+      "category": "competition"
     },
     {
       "title": "关于举办安徽省第二届科普辅导员职业技能大赛的通知",
@@ -74,8 +68,7 @@
       "source_tab": "",
       "raw_date": "2026年07月15日",
       "sub_label": "课题申报",
-      "category": "competition",
-      "pushed": false
+      "category": "competition"
     },
     {
       "title": "关于组织参加第十五届“挑战杯”中国大学生创业计划竞赛东北振兴产业升级专项赛的通知",
@@ -108,6 +101,618 @@
       "source_tab": "其他通知",
       "category": "holiday",
       "pushed": false
+    },
+    {
+      "title": "关于举办学校2026年青年教师教学基本功比赛的通知",
+      "date": "2026-07-08",
+      "link": "https://jwc.hfut.edu.cn/info/1344/5867.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月08日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2027年度与日本学术振兴会“希望会议”项目指南",
+      "date": "2026-07-08",
+      "link": "https://kyy.hfut.edu.cn/2026/0708/c3310a322445/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月08日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于组织参加2026年“数据要素×”大赛安徽分赛的通知",
+      "date": "2026-07-08",
+      "link": "https://ci.hfut.edu.cn/info/1063/16536.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月08日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "合肥校区2026年暑期食堂停伙、复伙通知",
+      "date": "2026-07-07",
+      "link": "https://zwb.hfut.edu.cn/info/1029/6445.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月07日",
+      "sub_label": "假期安排",
+      "category": "holiday"
+    },
+    {
+      "title": "基金委发布2026年度湖北人形机器人联合基金重大专项项目指南",
+      "date": "2026-07-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0703/c3310a322151/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于2026年暑期相关事项安排的通知",
+      "date": "2026-07-03",
+      "link": "http://dzb.hfut.edu.cn/info/1039/2853.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月03日",
+      "sub_label": "假期安排",
+      "category": "holiday"
+    },
+    {
+      "title": "生态环境部征求京津冀环境综合治理国家科技重大专项 2027年度第一批项目申报指南意见",
+      "date": "2026-07-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0702/c3310a322107/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年07月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度锦屏重大科学基础设施国际合作研究计划专项项目指南",
+      "date": "2026-06-30",
+      "link": "https://kyy.hfut.edu.cn/2026/0630/c3310a322069/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月30日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度与韩国国家研究基金会合作研究项目指南",
+      "date": "2026-06-30",
+      "link": "https://kyy.hfut.edu.cn/2026/0630/c3310a322070/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月30日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度与伊朗国家科学基金会合作研究项目指南",
+      "date": "2026-06-30",
+      "link": "https://kyy.hfut.edu.cn/2026/0630/c3310a322072/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月30日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布与欧洲核子中心（NSFC-CERN）重大科学基础设施国际合作研究计划专项2026年度项目指南",
+      "date": "2026-06-30",
+      "link": "https://kyy.hfut.edu.cn/2026/0630/c3310a322074/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月30日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于发布2026年桐城市第一批产业创新引导资金(揭榜挂帅)项目技术需求及项目申报指南的通知",
+      "date": "2026-06-29",
+      "link": "https://kyy.hfut.edu.cn/2026/0629/c3310a320700/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月29日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于组织教师参加第八届全国高校混合式教学设计创新大赛的通知",
+      "date": "2026-06-29",
+      "link": "https://jwc.hfut.edu.cn/info/1250/5847.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月29日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度基金委-湖北省“联合基金量子重大专项”项目指南的通告",
+      "date": "2026-06-24",
+      "link": "https://kyy.hfut.edu.cn/2026/0624/c3310a319853/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月24日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度生态环境联合基金项目指南的通告",
+      "date": "2026-06-24",
+      "link": "https://kyy.hfut.edu.cn/2026/0624/c3310a319854/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月24日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于第十五届“挑战杯”中国大学生创业计划竞赛主体赛推荐国赛项目的公示",
+      "date": "2026-06-23",
+      "link": "https://news.hfut.edu.cn/info/1136/77817.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月23日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办离退休教职工体检报告解读暨健康咨询活动的通知",
+      "date": "2026-06-22",
+      "link": "https://xyy.hfut.edu.cn/2026/0622/c4798a319790/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月22日",
+      "sub_label": "讲座报告",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布“十五五”第一批重大项目指南",
+      "date": "2026-06-17",
+      "link": "https://kyy.hfut.edu.cn/2026/0617/c3310a319744/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月17日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "人工智能专项办发布新一代人工智能国家科技重大专项2026年度第一批公开项目申报指南",
+      "date": "2026-06-17",
+      "link": "https://kyy.hfut.edu.cn/2026/0617/c3310a319733/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月17日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "工业和信息化部对国家重点研发计划“高端科研仪器研制”重点专项 2026年度（第一批）项目申报指南建议征求意见",
+      "date": "2026-06-16",
+      "link": "https://kyy.hfut.edu.cn/2026/0616/c3310a319721/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月16日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "国家重点研发计划：“发育编程及其代谢调节”“合成生物学”重点专项2026年度项目申报指南征求意见",
+      "date": "2026-06-15",
+      "link": "https://kyy.hfut.edu.cn/2026/0615/c3310a319695/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月15日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于做好学校2026年教职工暑期疗休养工作的通知",
+      "date": "2026-06-15",
+      "link": "http://wzqpt.hfut.edu.cn/_s31/2026/0616/c614a319715/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年06月15日",
+      "sub_label": "假期安排",
+      "category": "holiday"
+    },
+    {
+      "title": "基金委发布2026年度与国际应用系统分析学会学术会议项目指南",
+      "date": "2026-06-12",
+      "link": "https://kyy.hfut.edu.cn/2026/0612/c3310a319681/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月12日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于2026年端午节放假安排的通知",
+      "date": "2026-06-12",
+      "link": "http://dzb.hfut.edu.cn/info/1039/2843.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月12日",
+      "sub_label": "放假通知",
+      "category": "holiday"
+    },
+    {
+      "title": "国家卫健委对创新药物研发国家科技重大专项2027年度项目申报指南征求意见",
+      "date": "2026-06-10",
+      "link": "https://kyy.hfut.edu.cn/2026/0610/c3310a319642/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月10日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度与国际理论物理中心合作交流项目指南",
+      "date": "2026-06-10",
+      "link": "https://kyy.hfut.edu.cn/2026/0610/c3310a319641/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月10日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度民营企业创新发展联合基金项目指南（第二批）的通告",
+      "date": "2026-06-10",
+      "link": "https://kyy.hfut.edu.cn/2026/0610/c3310a319640/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月10日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于中国国际大学生创新大赛（2026）合肥工业大学校赛赛程安排的通知",
+      "date": "2026-06-10",
+      "link": "https://jwc.hfut.edu.cn/info/1248/5661.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月10日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于发布2026年度JPPT第一批项目指南的通知",
+      "date": "2026-06-09",
+      "link": "https://gfzby.hfut.edu.cn/2026/0609/c2118a319627/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年06月09日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于发布某密码专项项目指南的通知",
+      "date": "2026-06-08",
+      "link": "https://gfzby.hfut.edu.cn/2026/0608/c2118a319604/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年06月08日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度关于民营企业创新发展联合基金（术理创新）项目指南的通告",
+      "date": "2026-06-08",
+      "link": "https://kyy.hfut.edu.cn/2026/0608/c3310a319596/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月08日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布“可持续发展国际合作科学计划”2026年度项目指南（第二批）",
+      "date": "2026-06-08",
+      "link": "https://kyy.hfut.edu.cn/2026/0608/c3310a319595/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月08日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于开展“迎端午”包粽子活动的通知",
+      "date": "2026-06-08",
+      "link": "http://zwb.hfut.edu.cn/info/1029/6418.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月08日",
+      "sub_label": "放假通知",
+      "category": "holiday"
+    },
+    {
+      "title": "基金委发布2026年度与澳门科学技术发展基金学术会议项目指南",
+      "date": "2026-06-05",
+      "link": "https://kyy.hfut.edu.cn/2026/0605/c3310a319570/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月05日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办2026年第18届全国大学生广告艺术大赛合肥工业大学校赛暨省赛选拔赛的通知",
+      "date": "2026-06-05",
+      "link": "https://wfxy.hfut.edu.cn/info/1062/4432.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月05日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办2026年合肥工业大学信息安全竞赛—作品赛的通知",
+      "date": "2026-06-04",
+      "link": "https://ci.hfut.edu.cn/info/1063/16489.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月04日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办第十七届安徽省百所高校百万大学生科普创意创新大赛校内选拔赛的通知",
+      "date": "2026-06-04",
+      "link": "https://kyy.hfut.edu.cn/2026/0604/c3310a319505/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月04日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度赴香港参加NSFC-BHKAEC学术会议项目指南",
+      "date": "2026-06-04",
+      "link": "https://kyy.hfut.edu.cn/2026/0604/c3310a319511/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月04日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2027年度与日本学术振兴会合作交流与双边研讨会项目指南",
+      "date": "2026-06-04",
+      "link": "https://kyy.hfut.edu.cn/2026/0604/c3310a319513/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月04日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度关于民营企业创新发展联合基金（宁德时代）项目指南的通告",
+      "date": "2026-06-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0602/c3310a319477/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度航运创新联合基金项目指南",
+      "date": "2026-06-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0602/c3310a319478/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度企业创新发展联合基金项目指南（第三批）",
+      "date": "2026-06-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0602/c3310a319479/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度融合创新联合基金项目指南",
+      "date": "2026-06-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0602/c3310a319480/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度通用技术基础研究联合基金项目指南",
+      "date": "2026-06-03",
+      "link": "https://kyy.hfut.edu.cn/2026/0602/c3310a319481/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月03日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "国家卫健委对癌症、心脑血管、呼吸和代谢性疾病防治研究 国家科技重大专项2027年度项目申报指南征求意见",
+      "date": "2026-06-02",
+      "link": "https://kyy.hfut.edu.cn/2026/0602/c3310a319458/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年06月02日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于发布2026年度国家自然科学基金融合创新联合基金项目指南的通告",
+      "date": "2026-05-28",
+      "link": "http://gfzby.hfut.edu.cn/2026/0528/c2118a319373/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年05月28日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于开展2026年JMRH课题申报工作的通知",
+      "date": "2026-05-28",
+      "link": "http://gfzby.hfut.edu.cn/2026/0527/c2118a319363/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年05月28日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度与金砖国家科技创新框架计划合作研究项目指南",
+      "date": "2026-05-25",
+      "link": "https://kyy.hfut.edu.cn/2026/0525/c3310a319327/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月25日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办2026中国大学生机械工程创新创意大赛——工业工程与精益管理创新赛合肥工业大学校赛的通知",
+      "date": "2026-05-25",
+      "link": "https://jxxy.hfut.edu.cn/info/1053/4883.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月25日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办2026年合肥工业大学大学生电子设计竞赛校内选拔赛的通知",
+      "date": "2026-05-25",
+      "link": "https://ea.hfut.edu.cn/info/1081/5187.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月25日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于在六安路校区开展“杏林春暖守护银龄” 体检报告解读暨义诊活动的通知",
+      "date": "2026-05-25",
+      "link": "https://xyy.hfut.edu.cn/2026/0525/c4798a319312/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月25日",
+      "sub_label": "讲座报告",
+      "category": "competition"
+    },
+    {
+      "title": "关于开展合肥工业大学2026年大学生暑期“三下乡”社会实践工作的通知",
+      "date": "2026-05-25",
+      "link": "http://tuanwei.hfut.edu.cn/2026/0522/c736a319301/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月25日",
+      "sub_label": "假期安排",
+      "category": "holiday"
+    },
+    {
+      "title": "国家能源投资集团有限责任公司对煤炭重大专项2027年度项目申报指南征求意见",
+      "date": "2026-05-25",
+      "link": "https://kyy.hfut.edu.cn/2026/0523/c3310a319305/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月25日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办2027年第十届中国大学生工程实践与创新能力大赛校级初赛的通知",
+      "date": "2026-05-22",
+      "link": "https://gpzx.hfut.edu.cn/2026/0520/c2411a319229/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月22日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于组织参加2026年度中国青年科技创新“揭榜挂帅”擂台赛（”挑战杯“专项赛）第二批的通知",
+      "date": "2026-05-21",
+      "link": "http://tuanwei.hfut.edu.cn/2026/0520/c736a319241/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月21日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于举办合肥工业大学第十八届大学生数学竞赛的通知",
+      "date": "2026-05-19",
+      "link": "https://maths.hfut.edu.cn/info/1047/7515.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月19日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布关于征集“低空经济基础研究”专项项目指南建议的通告",
+      "date": "2026-05-15",
+      "link": "https://kyy.hfut.edu.cn/2026/0515/c3310a319143/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月15日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度与盖茨基金会“女性健康创新”合作研究项目指南",
+      "date": "2026-05-15",
+      "link": "https://kyy.hfut.edu.cn/2026/0515/c3310a319141/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月15日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于征集某软件科研攻关项目指南建议的通知",
+      "date": "2026-05-15",
+      "link": "https://gfzby.hfut.edu.cn/2026/0515/c2118a319138/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年05月15日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于发布2026年第一批工大智谷（滁州）产业技术创新(揭榜挂帅)项目技术需求及申报指南的通知",
+      "date": "2026-05-14",
+      "link": "https://kyy.hfut.edu.cn/2026/0513/c3310a319107/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月14日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "国家卫健委对新发突发与重大传染病防控国家科技重大专项 2027年度项目申报指南征求意见",
+      "date": "2026-05-12",
+      "link": "https://kyy.hfut.edu.cn/2026/0512/c3310a319093/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月12日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "基金委发布2026年度与土耳其科学技术研究理事会合作研究项目指南",
+      "date": "2026-05-12",
+      "link": "https://kyy.hfut.edu.cn/2026/0512/c3310a319074/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月12日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于安徽省科学技术厅关于开展2026年安徽省科普微视频大赛的通知",
+      "date": "2026-05-12",
+      "link": "https://kyy.hfut.edu.cn/2026/0511/c3310a319042/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月12日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于安徽省科学技术厅关于举办2026年安徽省科普讲解大赛的通知",
+      "date": "2026-05-12",
+      "link": "https://kyy.hfut.edu.cn/2026/0511/c3310a319040/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月12日",
+      "sub_label": "学科竞赛",
+      "category": "competition"
+    },
+    {
+      "title": "关于征集合肥工业大学2026年大学生暑期“三下乡”社会实践“揭榜挂帅”榜单选题的通知",
+      "date": "2026-05-12",
+      "link": "http://tuanwei.hfut.edu.cn/2026/0511/c736a319067/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月12日",
+      "sub_label": "假期安排",
+      "category": "holiday"
+    },
+    {
+      "title": "科技部发布国家重点研发计划“政府间国际科技创新合作”专项 2026年度第二批人员交流项目申报指南",
+      "date": "2026-05-09",
+      "link": "https://kyy.hfut.edu.cn/2026/0509/c3310a319028/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月09日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "科技部发布国家重点研发计划“政府间国际科技创新合作”重点专项2026年度第二批联合研发项目申报指南",
+      "date": "2026-05-06",
+      "link": "https://kyy.hfut.edu.cn/2026/0506/c3310a318957/page.htm",
+      "source_tab": "",
+      "raw_date": "2026年05月06日",
+      "sub_label": "课题申报",
+      "category": "competition"
+    },
+    {
+      "title": "关于征集2026年度航空科学基金项目指南的通知",
+      "date": "2026-05-06",
+      "link": "https://gfzby.hfut.edu.cn/2026/0502/c2118a318952/page.psp",
+      "source_tab": "",
+      "raw_date": "2026年05月06日",
+      "sub_label": "课题申报",
+      "category": "competition"
     }
   ]
 }
