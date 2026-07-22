@@ -95,9 +95,23 @@ def generate_weekly_report(existing_map: dict, pusher):
 
 
 def main():
-    # Load config
-    with open("config.yaml", "r", encoding="utf-8") as f:
-        config = yaml.safe_load(f)
+    # Load config — 如果文件不存在则从环境变量构造（GitHub Actions 场景）
+    try:
+        with open("config.yaml", "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+    except FileNotFoundError:
+        import os
+        config = {
+            "scraper": {"base_url": "https://news.hfut.edu.cn/tzgg2.htm", "pages": 2, "timeout": 15},
+            "classifier": {
+                "competition_keywords": [],
+                "holiday_keywords": [],
+            },
+            "pusher": {
+                "mode": "pushplus",
+                "pushplus": {"token": os.environ.get("PUSHPLUS_TOKEN", "")},
+            },
+        }
 
     # Init modules
     scraper = NoticeScraper(timeout=15)
