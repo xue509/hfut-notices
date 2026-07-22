@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="斛兵来信">
+<meta name="theme-color" content="#005BAC">
+<link rel="manifest" href="manifest.json">
+<title>斛兵来信 - 合工大通知</title>
+<style>
+:root {
+  --primary: #005BAC;
+  --primary-light: #e8f0fa;
+  --comp: #e85d04;
+  --comp-light: #fff3eb;
+  --holiday: #2d6a4f;
+  --holiday-light: #edf7f2;
+  --bg: #f5f5f5;
+  --card: #fff;
+  --text: #1a1a1a;
+  --text2: #666;
+  --text3: #999;
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;padding-bottom:calc(80px + var(--safe-bottom))}
+/* 顶部栏 */
+.header{position:sticky;top:0;z-index:100;background:var(--primary);padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top, 0px));display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.header h1{font-size:18px;font-weight:600;color:#fff;letter-spacing:.5px}
+.header .date{font-size:12px;color:rgba(255,255,255,.7)}
+.search-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+/* 统计条 */
+.stats-bar{display:flex;padding:14px 16px;gap:12px}
+.stat-card{flex:1;background:var(--card);border-radius:var(--radius);padding:12px;text-align:center;box-shadow:var(--shadow)}
+.stat-card .num{font-size:24px;font-weight:700}
+.stat-card .num.comp{color:var(--comp)}
+.stat-card .num.holiday{color:var(--holiday)}
+.stat-card .label{font-size:11px;color:var(--text2);margin-top:2px}
+/* Tab */
+.tabs{display:flex;padding:0 16px;gap:8px;margin-bottom:4px}
+.tab{flex:1;padding:10px;text-align:center;border-radius:10px;font-size:14px;font-weight:500;border:none;cursor:pointer;background:var(--card);color:var(--text2);box-shadow:var(--shadow);transition:all .2s}
+.tab.active.comp-tab{background:var(--comp);color:#fff}
+.tab.active.holiday-tab{background:var(--holiday);color:#fff}
+/* 更新信息 */
+.update-info{padding:6px 16px;font-size:11px;color:var(--text3);text-align:right}
+/* 通知列表 */
+.list{padding:0 16px 8px}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;transition:all .15s;border-left:4px solid transparent;position:relative}
+.card:active{transform:scale(.985);background:#fafafa}
+.card.comp-card{border-left-color:var(--comp)}
+.card.holiday-card{border-left-color:var(--holiday)}
+.card .card-head{display:flex;align-items:flex-start;gap:8px}
+.card .emoji{font-size:16px;flex-shrink:0;margin-top:1px}
+.card .title{font-size:15px;font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--text3)}
+.card .meta .source{background:var(--bg);padding:2px 8px;border-radius:4px;font-size:11px}
+.card .arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);transition:transform .2s}
+.card.expanded .arrow{transform:translateY(-50%) rotate(90deg)}
+/* 展开详情 */
+.card .detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #eee}
+.card.expanded .detail{display:block}
+.card .detail .row{margin-bottom:8px;font-size:13px;color:var(--text2)}
+.card .detail .row span{color:var(--text3);margin-right:6px}
+.card .detail .link-btn{display:inline-block;margin-top:6px;padding:8px 16px;background:var(--primary);color:#fff;border-radius:8px;font-size:13px;text-decoration:none;font-weight:500}
+.card .detail .link-btn:active{opacity:.8}
+/* 搜索 */
+.search-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:200;padding:16px;padding-top:calc(16px + env(safe-area-inset-top, 0px))}
+.search-overlay.show{display:block}
+.search-box{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.search-box input{flex:1;padding:12px 16px;border-radius:12px;border:2px solid #ddd;font-size:15px;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--primary)}
+.search-box .cancel{background:none;border:none;font-size:15px;color:var(--primary);cursor:pointer;white-space:nowrap;padding:8px}
+.search-empty{text-align:center;padding:40px 0;color:var(--text3)}
+.search-empty .icon{font-size:48px;margin-bottom:12px}
+/* 空状态 */
+.empty-state{text-align:center;padding:40px 16px;color:var(--text3)}
+.empty-state .icon{font-size:48px;margin-bottom:8px;display:block}
+/* 底部导航 */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);display:flex;border-top:1px solid #eee;z-index:100;padding-bottom:var(--safe-bottom);box-shadow:0 -1px 4px rgba(0,0,0,.04)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 6px;font-size:10px;color:var(--text3);border:none;background:none;cursor:pointer;transition:color .2s}
+.nav-item .nav-icon{font-size:22px;margin-bottom:2px}
+.nav-item.active{color:var(--primary)}
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+/* 加载动画 */
+.loading{text-align:center;padding:20px;color:var(--text3)}
+.spinner{display:inline-block;width:24px;height:24px;border:2px solid #ddd;border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* 关于页面 */
+.about-page{display:none;padding:24px 16px}
+.about-page.show{display:block}
+.about-card{background:var(--card);border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--shadow)}
+.about-card .logo{font-size:56px;margin-bottom:12px}
+.about-card h2{font-size:18px;margin-bottom:4px}
+.about-card .ver{font-size:12px;color:var(--text3);margin-bottom:16px}
+.about-card p{font-size:13px;color:var(--text2);line-height:1.8}
+/* iOS 安全区域 */
+@supports(padding:max(0px)){
+  .header{padding-top:max(12px, env(safe-area-inset-top))}
+  body{padding-bottom:max(80px, calc(80px + env(safe-area-inset-bottom)))}
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="header">
+  <div>
+    <h1>📬 斛兵来信</h1>
+    <span class="date" id="headerDate"></span>
+  </div>
+  <button class="search-btn" onclick="toggleSearch()">🔍</button>
+</div>
+
+<!-- 统计 -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-card"><div class="num comp" id="compCount">0</div><div class="label">🏆 竞赛通知</div></div>
+  <div class="stat-card"><div class="num holiday" id="holidayCount">0</div><div class="label">📅 节假日通知</div></div>
+  <div class="stat-card"><div class="num" id="updateDay" style="color:var(--primary)">--</div><div class="label">📆 更新日期</div></div>
+</div>
+
+<!-- Tab -->
+<div class="tabs" id="tabsArea">
+  <button class="tab active comp-tab" onclick="switchTab('competition')">🏆 竞赛通知</button>
+  <button class="tab holiday-tab" onclick="switchTab('holiday')">📅 节假日通知</button>
+</div>
+
+<div class="update-info" id="updateInfo"></div>
+
+<!-- 列表 -->
+<div class="list" id="noticeList"></div>
+
+<!-- 主页面容器 -->
+<div id="mainPage"></div>
+
+<!-- 关于页面 -->
+<div class="about-page" id="aboutPage">
+  <div class="about-card">
+    <div class="logo">📬</div>
+    <h2>斛兵来信</h2>
+    <div class="ver">v1.0 · 合工大通知监控</div>
+    <p>
+      🏫 数据来源：合肥工业大学新闻网<br>
+      🔗 <a href="https://news.hfut.edu.cn/tzgg2.htm" target="_blank">news.hfut.edu.cn/tzgg2.htm</a><br><br>
+      🏆 自动抓取竞赛通知<br>
+      📅 自动抓取节假日通知<br>
+      📱 PushPlus 微信推送<br><br>
+      Made with ❤️ for HFUTers
+    </p>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="showPage('home')">
+    <span class="nav-icon">🏠</span>首页
+  </button>
+  <button class="nav-item" onclick="switchTab('competition');showPage('home')">
+    <span class="nav-icon">🏆</span>竞赛
+  </button>
+  <button class="nav-item" onclick="switchTab('holiday');showPage('home')">
+    <span class="nav-icon">📅</span>节假日
+  </button>
+  <button class="nav-item" onclick="showPage('about')">
+    <span class="nav-icon">⚙</span>关于
+  </button>
+</div>
+
+<!-- 搜索遮罩 -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜索通知..." oninput="doSearch()" autocomplete="off">
+    <button class="cancel" onclick="toggleSearch()">取消</button>
+  </div>
+  <div class="list" id="searchResults"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== 全局状态 ====================
+let allNotices = [];
+let currentTab = 'competition';
+let currentPage = 'home';
+
+// ==================== 数据加载 ====================
+async function loadData() {
+  try {
+    const resp = await fetch('data.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    allNotices = data.notices || [];
+  } catch(e) {
+    console.warn('加载 data.json 失败，使用示例数据', e);
+    allNotices = getSampleData();
+  }
+  render();
+}
+
+function getSampleData() {
+  return [
+    {title:"关于举办2026新域新质创新大赛校内选拔赛的通知",date:"2026-07-21",link:"http://jwc.hfut.edu.cn/info/1248/5926.htm",category:"competition",source_tab:"教学科研"},
+    {title:"关于举办第二届合肥工业大学全球校友创新创业大赛的通知",date:"2026-07-21",link:"https://imi.hfut.edu.cn/2026/0720/c12254a322676/page.htm",category:"competition",source_tab:"教学科研"},
+    {title:"关于组织参加第十五届挑战杯创业计划竞赛的通知",date:"2026-07-13",link:"https://tuanwei.hfut.edu.cn/2026/0706/c736a322300/page.htm",category:"competition",source_tab:"其他通知"},
+    {title:"关于举办安徽省第二届科普辅导员职业技能大赛的通知",date:"2026-07-16",link:"https://kyy.hfut.edu.cn/2026/0716/c3310a322632/page.htm",category:"competition",source_tab:"教学科研"},
+    {title:"关于做好2026年暑期实验室安全管理工作的通知",date:"2026-07-09",link:"https://sysb.hfut.edu.cn/info/1056/2370.htm",category:"holiday",source_tab:"其他通知"},
+    {title:"关于屯溪路校区本科生浴室暑期开放时间安排的通知",date:"2026-07-09",link:"https://zwb.hfut.edu.cn/info/1029/6446.htm",category:"holiday",source_tab:"其他通知"},
+    {title:"2026年合肥工业大学医院（合肥校区）暑期值班表",date:"2026-07-15",link:"https://xyy.hfut.edu.cn/2026/0713/c4798a322557/page.htm",category:"holiday",source_tab:"其他通知"},
+    {title:"关于开通2026年暑期学生心理关爱服务线上平台的通知",date:"2026-07-08",link:"http://xgb.hfut.edu.cn/info/1060/19936.htm",category:"holiday",source_tab:"其他通知"},
+  ];
+}
+
+// ==================== 渲染 ====================
+function render() {
+  const filtered = allNotices.filter(n => n.category === currentTab);
+  filtered.sort((a,b) => b.date.localeCompare(a.date));
+
+  // 统计
+  const compAll = allNotices.filter(n => n.category === 'competition');
+  const holAll = allNotices.filter(n => n.category === 'holiday');
+  document.getElementById('compCount').textContent = compAll.length;
+  document.getElementById('holidayCount').textContent = holAll.length;
+
+  // 更新日期
+  const dates = allNotices.map(n => n.date).sort().reverse();
+  document.getElementById('updateDay').textContent = dates[0] ? dates[0].slice(5) : '--';
+  document.getElementById('headerDate').textContent = dates[0] ? '更新于 ' + dates[0] : '';
+  document.getElementById('updateInfo').textContent = '共 ' + filtered.length + ' 条通知';
+
+  // 渲染列表
+  const listEl = document.getElementById('noticeList');
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div class="empty-state"><span class="icon">📭</span>暂无${currentTab==='competition'?'竞赛':'节假日'}通知<br><small>有新通知时会自动更新</small></div>`;
+  } else {
+    listEl.innerHTML = filtered.map((n,i) => `
+      <div class="card ${n.category==='competition'?'comp-card':'holiday-card'}" onclick="toggleCard(this)" id="card${i}">
+        <div class="card-head">
+          <span class="emoji">${n.category==='competition'?'🏆':'📅'}</span>
+          <span class="title">${escHtml(n.title)}</span>
+        </div>
+        <div class="meta">
+          <span>📆 ${n.date}</span>
+          <span class="source">${escHtml(n.source_tab||'')}</span>
+        </div>
+        <span class="arrow">▶</span>
+        <div class="detail">
+          <div class="row"><span>📝</span> ${escHtml(n.title)}</div>
+          <div class="row"><span>📅</span> 发布时间：${n.date}</div>
+          <div class="row"><span>📂</span> 来源栏目：${escHtml(n.source_tab||'未知')}</div>
+          <a href="${escHtml(n.link)}" target="_blank" class="link-btn" onclick="event.stopPropagation()">🔗 查看官网原文 →</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Tab 样式
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (currentTab === 'competition') {
+    document.querySelector('.comp-tab').classList.add('active');
+  } else {
+    document.querySelector('.holiday-tab').classList.add('active');
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  render();
+  showPage('home');
+}
+
+function toggleCard(card) {
+  card.classList.toggle('expanded');
+}
+
+function showPage(page) {
+  currentPage = page;
+  document.getElementById('mainPage').style.display = page === 'home' ? 'block' : 'none';
+  document.getElementById('noticeList').style.display = page === 'home' ? 'block' : 'none';
+  document.getElementById('statsBar').style.display = page === 'home' ? 'flex' : 'none';
+  document.getElementById('tabsArea').style.display = page === 'home' ? 'flex' : 'none';
+  document.getElementById('updateInfo').style.display = page === 'home' ? 'block' : 'none';
+  document.getElementById('aboutPage').classList.toggle('show', page === 'about');
+  document.querySelectorAll('.nav-item').forEach((el,i) => {
+    el.classList.toggle('active', (page==='home'&&i===0) || (page==='about'&&i===3));
+  });
+}
+
+// ==================== 搜索 ====================
+function toggleSearch() {
+  const overlay = document.getElementById('searchOverlay');
+  const showing = overlay.classList.toggle('show');
+  if (showing) {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    setTimeout(() => document.getElementById('searchInput').focus(), 100);
+  }
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const results = document.getElementById('searchResults');
+  if (!q) { results.innerHTML = ''; return; }
+
+  const matched = allNotices.filter(n =>
+    n.title.toLowerCase().includes(q) ||
+    (n.source_tab||'').includes(q)
+  );
+
+  if (matched.length === 0) {
+    results.innerHTML = `<div class="search-empty"><div class="icon">🔍</div>未找到"${escHtml(q)}"相关通知</div>`;
+    return;
+  }
+
+  results.innerHTML = matched.map(n => `
+    <div class="card ${n.category==='competition'?'comp-card':'holiday-card'}" onclick="this.classList.toggle('expanded')">
+      <div class="card-head">
+        <span class="emoji">${n.category==='competition'?'🏆':'📅'}</span>
+        <span class="title">${escHtml(n.title)}</span>
+      </div>
+      <div class="meta">
+        <span>📆 ${n.date}</span>
+        <span class="source">${escHtml(n.source_tab||'')}</span>
+      </div>
+      <span class="arrow">▶</span>
+      <div class="detail">
+        <div class="row"><span>📝</span> ${escHtml(n.title)}</div>
+        <div class="row"><span>📅</span> 发布时间：${n.date}</div>
+        <a href="${escHtml(n.link)}" target="_blank" class="link-btn" onclick="event.stopPropagation()">🔗 查看官网原文 →</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== 工具函数 ====================
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s||'';
+  return d.innerHTML;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ==================== PWA 注册 ====================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ==================== 启动 ====================
+loadData();
+showPage('home');
+</script>
+</body>
+</html>
