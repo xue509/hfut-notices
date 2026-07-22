@@ -189,16 +189,37 @@ let allNotices = [];
 let currentTab = 'competition';
 let currentPage = 'home';
 
+// ==================== API 配置 ====================
+// 部署后改成你的 PythonAnywhere 地址
+const API_BASE = 'https://xue509.pythonanywhere.com';
+
 // ==================== 数据加载 ====================
 async function loadData() {
   try {
-    const resp = await fetch('data.json?t=' + Date.now());
+    const resp = await fetch(API_BASE + '/api/notices/latest?t=' + Date.now());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
-    allNotices = data.notices || [];
+    const json = await resp.json();
+    if (json.code === 0 && json.data) {
+      const d = json.data;
+      // 合并 competition 和 holiday
+      allNotices = [...(d.competition||[]), ...(d.holiday||[])];
+      // 更新页面上的更新时间
+      if (d.updated && d.updated !== 'N/A') {
+        document.getElementById('headerDate').textContent = '更新于 ' + d.updated;
+      }
+    }
   } catch(e) {
-    console.warn('加载 data.json 失败，使用示例数据', e);
-    allNotices = getSampleData();
+    console.warn('API 请求失败，使用缓存数据', e);
+    // 回退到静态 data.json
+    try {
+      const resp = await fetch('data.json?t=' + Date.now());
+      if (resp.ok) {
+        const data = await resp.json();
+        allNotices = data.notices || [];
+      }
+    } catch(e2) {
+      allNotices = getSampleData();
+    }
   }
   render();
 }
@@ -307,10 +328,29 @@ function doSearch() {
   const results = document.getElementById('searchResults');
   if (!q) { results.innerHTML = ''; return; }
 
+  // 使用 API 搜索
+  fetch(API_BASE + '/api/notices?search=' + encodeURIComponent(q) + '&per_page=50')
+    .then(r => r.json())
+    .then(json => {
+      if (json.code === 0 && json.data) {
+        renderSearchResults(json.data.items, q);
+        return;
+      }
+      // 回退本地搜索
+      localSearch(q);
+    })
+    .catch(() => localSearch(q));
+}
+
+function localSearch(q) {
   const matched = allNotices.filter(n =>
-    n.title.toLowerCase().includes(q) ||
-    (n.source_tab||'').includes(q)
+    n.title.toLowerCase().includes(q) || (n.source_tab||'').includes(q)
   );
+  renderSearchResults(matched, q);
+}
+
+function renderSearchResults(matched, q) {
+  const results = document.getElementById('searchResults');
 
   if (matched.length === 0) {
     results.innerHTML = `<div class="search-empty"><div class="icon">🔍</div>未找到"${escHtml(q)}"相关通知</div>`;
