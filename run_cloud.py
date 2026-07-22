@@ -1,23 +1,20 @@
 """
 云端运行脚本 - 用于 GitHub Actions
-特点: 用 JSON 文件替代 SQLite 做去重存储
+零依赖配置：全部从环境变量读取，不需要 config.yaml
 """
 import json, os, sys, hashlib
 from datetime import datetime
 from pathlib import Path
-
-import yaml
 
 from scraper import NoticeScraper
 from classifier import NoticeClassifier
 from wechat_pusher import PushPlusPusher, format_push_message
 
 DATA_FILE = Path("docs/data.json")
-SEEN_FILE = Path("docs/seen.json")  # 已推送的 URL hash 列表
+SEEN_FILE = Path("docs/seen.json")
 
 
 def load_seen():
-    """加载已推送的 URL hash 集合"""
     if SEEN_FILE.exists():
         return set(json.loads(SEEN_FILE.read_text(encoding="utf-8")))
     return set()
@@ -28,7 +25,6 @@ def save_seen(seen):
 
 
 def load_existing():
-    """加载现有通知数据"""
     if DATA_FILE.exists():
         return json.loads(DATA_FILE.read_text(encoding="utf-8"))
     return {"updated": "", "total": 0, "notices": []}
@@ -43,10 +39,9 @@ def hash_url(url):
     return hashlib.sha256(url.encode()).hexdigest()[:16]
 
 
-def generate_weekly_report(existing_map: dict, pusher):
-    """生成周报并推送"""
+def generate_weekly_report(existing_map, pusher):
     from collections import Counter
-    from datetime import datetime, timedelta
+    from datetime import timedelta
 
     week_ago = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
     week_notices = [n for n in existing_map.values() if n["date"] >= week_ago]
@@ -55,69 +50,42 @@ def generate_weekly_report(existing_map: dict, pusher):
 
     comp = [n for n in week_notices if n["category"] == "competition"]
     hol = [n for n in week_notices if n["category"] == "holiday"]
-
-    # 子标签统计
-    sub_counts = Counter(n.get("sub_label", "其他") for n in week_notices)
+    sub_counts = Counter(n.get("sub_label", "") for n in week_notices)
 
     lines = [
-        "## 📊 合工大通知周报",
-        "",
+        "## 合工大通知周报",
         f"**{week_ago} ~ {datetime.now().strftime('%m-%d')}**",
-        "",
-        f"🏆 竞赛通知 **{len(comp)}** 条",
-        f"📅 节假日通知 **{len(hol)}** 条",
-        f"📌 合计 **{len(week_notices)}** 条",
+        f"竞赛 {len(comp)} 条 | 节假日 {len(hol)} 条 | 合计 {len(week_notices)} 条",
         "",
     ]
-
     if sub_counts:
         lines.append("**分类统计**:")
         for tag, count in sub_counts.most_common():
-            lines.append(f"- {tag}: {count} 条")
-        lines.append("")
+            if tag:
+                lines.append(f"- {tag}: {count} 条")
 
-    # 本周重点（竞赛类取前3）
     if comp:
-        lines.append("**🔥 本周竞赛**:")
-        for n in sorted(comp, key=lambda x: x["date"], reverse=True)[:3]:
-            sub = n.get("sub_label", "")
-            sub_str = f" `{sub}`" if sub else ""
-            lines.append(f"- [{n['title']}]({n['link']}){sub_str}")
         lines.append("")
+        lines.append("**本周竞赛 TOP3**:")
+        for n in sorted(comp, key=lambda x: x["date"], reverse=True)[:3]:
+            lines.append(f"- {n['title']}")
 
-    lines.append("---")
-    lines.append("📱 [打开 App](https://xue509.github.io/hfut-notices/)")
     content = "\n".join(lines)
-
-    title = f"📊 合工大通知周报 ({week_ago} ~ {datetime.now().strftime('%m-%d')})"
+    title = f"合工大通知周报 ({week_ago})"
     pusher.push(title, content)
-    print(f"Weekly report sent: {len(week_notices)} notices this week")
+    print(f"Weekly report sent: {len(week_notices)} notices")
 
 
 def main():
-    # Load config — 如果文件不存在则从环境变量构造（GitHub Actions 场景）
-    try:
-        with open("config.yaml", "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f)
-    except FileNotFoundError:
-        import os
-        config = {
-            "scraper": {"base_url": "https://news.hfut.edu.cn/tzgg2.htm", "pages": 2, "timeout": 15},
-            "classifier": {
-                "competition_keywords": [],
-                "holiday_keywords": [],
-            },
-            "pusher": {
-                "mode": "pushplus",
-                "pushplus": {"token": os.environ.get("PUSHPLUS_TOKEN", "")},
-            },
-        }
+    # 全部配置从环境变量读取
+    token = os.environ.get("PUSHPLUS_TOKEN", "")
+    if not token:
+        print("ERROR: PUSHPLUS_TOKEN not set")
+        sys.exit(1)
 
-    # Init modules
     scraper = NoticeScraper(timeout=15)
     classifier = NoticeClassifier()
-    pp_token = config["pusher"]["pushplus"]["token"]
-    pusher = PushPlusPusher(token=pp_token) if pp_token else None
+    pusher = PushPlusPusher(token=token)
 
     # Load state
     seen = load_seen()
@@ -126,7 +94,7 @@ def main():
 
     # Scrape
     print("Scraping...")
-    notices = scraper.fetch_all(pages=config.get("scraper", {}).get("pages", 2))
+    notices = scraper.fetch_all(pages=2)
     print(f"Fetched {len(notices)} notices")
 
     # Classify
@@ -134,7 +102,7 @@ def main():
     targets = cat["competition"] + cat["holiday"]
     print(f"Classified: {len(cat['competition'])} competition + {len(cat['holiday'])} holiday")
 
-    # Dedup & store new ones
+    # Dedup & store
     new_comp, new_hol = [], []
     for n in targets:
         h = hash_url(n["link"])
@@ -150,31 +118,28 @@ def main():
 
     print(f"New: {len(new_comp)} competition, {len(new_hol)} holiday")
 
-    # Fetch article summaries for new notices
+    # Fetch summaries
     all_new = new_comp + new_hol
     if all_new:
         print(f"Fetching summaries for {len(all_new)} new notices...")
-        for n in all_new[:6]:  # 最多抓6条摘要，避免超时
+        for n in all_new[:6]:
             summary = scraper.fetch_article_summary(n["link"])
             if summary:
                 n["summary"] = summary
-                print(f"  summary: {n['title'][:30]}... -> {len(summary)} chars")
+                print(f"  OK: {n['title'][:30]}...")
 
     # Push
-    if pusher and pp_token != "your_pushplus_token_here":
-        for cat_name, notices_list in [("competition", new_comp), ("holiday", new_hol)]:
-            if notices_list:
-                msg = format_push_message(cat_name, notices_list)
-                success = pusher.push(msg["title"], msg["content"])
-                print(f"Push {cat_name}: {'OK' if success else 'FAIL'}")
+    for cat_name, notices_list in [("competition", new_comp), ("holiday", new_hol)]:
+        if notices_list:
+            msg = format_push_message(cat_name, notices_list)
+            success = pusher.push(msg["title"], msg["content"])
+            print(f"Push {cat_name}: {'OK' if success else 'FAIL'}")
 
-    # Weekly report (every Monday UTC / 周一北京时间)
-    if datetime.now().weekday() == 0 and pusher:
+    # Weekly report (Monday)
+    if datetime.now().weekday() == 0:
         generate_weekly_report(existing_map, pusher)
-    else:
-        print("PushPlus not configured, skipping push")
 
-    # Save all data
+    # Save
     all_notices = list(existing_map.values())
     all_notices.sort(key=lambda x: x["date"], reverse=True)
     output = {
@@ -184,8 +149,7 @@ def main():
     }
     save_data(output)
     save_seen(seen)
-    print(f"Saved {len(all_notices)} notices to {DATA_FILE}")
-    print("Done!")
+    print(f"Saved {len(all_notices)} notices. Done!")
 
 
 if __name__ == "__main__":
