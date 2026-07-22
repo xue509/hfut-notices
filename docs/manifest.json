@@ -1,0 +1,21 @@
+{
+  "name": "斛兵来信 - 合工大通知",
+  "short_name": "斛兵来信",
+  "description": "合肥工业大学通知公告 - 竞赛 & 节假日提醒",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f5f5",
+  "theme_color": "#005BAC",
+  "icons": [{
+    "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%23005BAC'/%3E%3Ctext x='96' y='100' text-anchor='middle' font-size='72' fill='white'%3E📬%3C/text%3E%3Ctext x='96' y='155' text-anchor='middle' font-size='28' fill='rgba(255,255,255,0.8)'%3E斛兵%3C/text%3E%3C/svg%3E",
+    "sizes": "192x192",
+    "type": "image/svg+xml",
+    "purpose": "any"
+  }, {
+    "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%23005BAC'/%3E%3Ctext x='256' y='270' text-anchor='middle' font-size='180' fill='white'%3E📬%3C/text%3E%3Ctext x='256' y='400' text-anchor='middle' font-size='70' fill='rgba(255,255,255,0.8)'%3E斛兵%3C/text%3E%3C/svg%3E",
+    "sizes": "512x512",
+    "type": "image/svg+xml",
+    "purpose": "any"
+  }]
+}
