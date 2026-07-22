@@ -247,6 +247,60 @@ class NoticeScraper:
 
         return raw_date.strip()
 
+    def fetch_article_summary(self, url: str, max_chars: int = 200) -> str:
+        """
+        抓取通知详情页，提取正文前 N 字摘要。
+
+        适配合工大各子站不同 HTML 结构：
+        - info/xxx/xxx.htm 类型
+        - /2026/xxxx/cxxxaxxxx/page.htm 类型
+        """
+        try:
+            html = self.fetch_page(url)
+            if not html:
+                return ""
+
+            soup = BeautifulSoup(html, "lxml")
+
+            # 尝试多种常见正文容器
+            selectors = [
+                "div.v_news_content",   # 最常见的正文区
+                "div.news_content",
+                "div.article-content",
+                "div.article_content",
+                "div.content",
+                "div#vsb_content",
+                "div.vsb_content",
+                "article",
+                "div.entry-content",
+            ]
+
+            text = ""
+            for sel in selectors:
+                container = soup.select_one(sel)
+                if container:
+                    text = container.get_text(separator=" ", strip=True)
+                    break
+
+            # 如果都没找到，取 body 内所有文字
+            if not text:
+                body = soup.find("body")
+                if body:
+                    text = body.get_text(separator=" ", strip=True)
+
+            # 清理：去掉多余空白
+            text = re.sub(r'\s+', ' ', text).strip()
+
+            # 截取
+            if len(text) > max_chars:
+                text = text[:max_chars] + "…"
+
+            return text
+
+        except Exception as e:
+            logger.warning(f"抓取摘要失败 {url}: {e}")
+            return ""
+
     def fetch_recent_notices(self, days: int = 7, pages: int = 3) -> list[dict]:
         """
         获取最近 N 天内的通知。
