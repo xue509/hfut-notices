@@ -7,11 +7,14 @@ from datetime import datetime
 from pathlib import Path
 
 from scraper import NoticeScraper
-from classifier import NoticeClassifier
+from classifier import NoticeClassifier, CATEGORIES, CATEGORY_ORDER, PUSH_CATEGORIES
 from wechat_pusher import PushPlusPusher, format_push_message
 
 DATA_FILE = Path("docs/data.json")
 SEEN_FILE = Path("docs/seen.json")
+
+# 每轮最多补抓多少条正文摘要（顺带控制 GitHub Actions 的运行时长）
+SUMMARY_BUDGET = 30
 
 
 def load_seen():
@@ -50,7 +53,7 @@ def generate_weekly_report(existing_map, pusher):
 
     comp = [n for n in week_notices if n["category"] == "competition"]
     hol = [n for n in week_notices if n["category"] == "holiday"]
-    sub_counts = Counter(n.get("sub_label", "") for n in week_notices)
+    sub_counts = Counter(n.get("sub_label", "") for n in week_notices if n.get("sub_label"))
 
     lines = [
         "## 合工大通知周报",
@@ -97,59 +100,83 @@ def main():
     notices = scraper.fetch_all(pages=2)
     print(f"Fetched {len(notices)} notices")
 
-    # Classify
+    # Classify  —— 全部类别都入库（App 要展示），但只有 PUSH_CATEGORIES 推微信
     cat = classifier.classify_batch(notices)
-    targets = cat["competition"] + cat["holiday"]
-    print(f"Classified: {len(cat['competition'])} competition + {len(cat['holiday'])} holiday")
+    print("Classified: " + ", ".join(
+        f"{k}={len(cat[k])}" for k in CATEGORY_ORDER if cat[k]))
 
     # Dedup & store
-    new_comp, new_hol = [], []
-    for n in targets:
+    new_by_cat = {k: [] for k in CATEGORIES}
+    for n in notices:
         h = hash_url(n["link"])
         if h not in existing_map:
             existing_map[h] = n
         if h not in seen:
             seen.add(h)
             n["pushed"] = False
-            if n["category"] == "competition":
-                new_comp.append(n)
-            else:
-                new_hol.append(n)
+            new_by_cat[n["category"]].append(n)
 
-    print(f"New: {len(new_comp)} competition, {len(new_hol)} holiday")
+    new_push = {k: v for k, v in new_by_cat.items() if k in PUSH_CATEGORIES}
+    print("New: " + ", ".join(f"{k}={len(v)}" for k, v in new_by_cat.items() if v))
 
-    # Fetch summaries
-    all_new = new_comp + new_hol
-    if all_new:
-        print(f"Fetching summaries for {len(all_new)} new notices...")
-        for n in all_new[:6]:
+    # ---- 正文摘要 ----
+    # 新通知全部要简介；老通知里缺简介的也顺带补上（每轮有预算上限）
+    need_summary = [n for n in new_by_cat.values() for n in n]
+    missing = [n for n in existing_map.values() if not n.get("summary")]
+    backfill = [n for n in missing if n not in need_summary]
+
+    queue = need_summary + backfill
+    if len(queue) > SUMMARY_BUDGET:
+        print(f"Summary queue {len(queue)} > budget {SUMMARY_BUDGET}, "
+              f"deferring {len(queue) - SUMMARY_BUDGET}")
+        queue = queue[:SUMMARY_BUDGET]
+
+    if queue:
+        print(f"Fetching summaries for {len(queue)} notices "
+              f"({len(need_summary)} new + backfill)...")
+        got = 0
+        for n in queue:
             summary = scraper.fetch_article_summary(n["link"])
             if summary:
                 n["summary"] = summary
-                print(f"  OK: {n['title'][:30]}...")
+                got += 1
+        print(f"  got {got}/{len(queue)} summaries")
 
-    # Push
-    for cat_name, notices_list in [("competition", new_comp), ("holiday", new_hol)]:
+    # ---- 推送（只推 PUSH_CATEGORIES） ----
+    for cat_name in PUSH_CATEGORIES:
+        notices_list = new_push.get(cat_name) or []
         if notices_list:
             msg = format_push_message(cat_name, notices_list)
             success = pusher.push(msg["title"], msg["content"])
             print(f"Push {cat_name}: {'OK' if success else 'FAIL'}")
 
-    # Weekly report (Monday)
-    if datetime.now().weekday() == 0:
-        generate_weekly_report(existing_map, pusher)
-
-    # Save
+    # ---- 保存 ----
     all_notices = list(existing_map.values())
+    # 丢掉老的空摘要键，避免 data.json 里一堆 "summary": ""
+    all_notices = [n for n in all_notices if n]
     all_notices.sort(key=lambda x: x["date"], reverse=True)
+
+    summary_cov = sum(1 for n in all_notices if n.get("summary"))
     output = {
         "updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total": len(all_notices),
+        "summary_coverage": f"{summary_cov}/{len(all_notices)}",
+        "categories": {
+            k: {"label": v["label"], "emoji": v["emoji"],
+                "color": v["color"], "color_dk": v["color_dk"]}
+            for k, v in CATEGORIES.items()
+        },
+        "push_categories": PUSH_CATEGORIES,
         "notices": all_notices,
     }
     save_data(output)
     save_seen(seen)
-    print(f"Saved {len(all_notices)} notices. Done!")
+    print(f"Saved {len(all_notices)} notices ({summary_cov} with summary). Done!")
+
+    # ---- 周报（周一） ----
+    # 放在保存之后，这样刚抓到的通知也算进本周
+    if datetime.now().weekday() == 0:
+        generate_weekly_report(existing_map, pusher)
 
 
 if __name__ == "__main__":

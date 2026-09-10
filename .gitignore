@@ -2,3 +2,16 @@ notices.db
 monitor.log
 __pycache__/
 *.pyc
+config.yaml
+fix_and_run.py
+upload_src.py
+create_workflow.py
+deploy.py
+test_api.py
+
+# 调试残留（先被提交过，需 git rm --cached 才真的生效）
+notices*.db
+notices*.db-shm
+notices*.db-wal
+*.zip
+test_msg.txt

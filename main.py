@@ -27,7 +27,7 @@ from pathlib import Path
 import yaml
 
 from scraper import NoticeScraper
-from classifier import NoticeClassifier
+from classifier import NoticeClassifier, CATEGORIES, CATEGORY_ORDER, PUSH_CATEGORIES
 from storage import NoticeStorage
 from wechat_pusher import NoticePusher
 
@@ -80,19 +80,15 @@ def setup_logging(config: dict):
 
 def export_app_data(storage: NoticeStorage, config: dict):
     """
-    将所有竞赛和节假日通知导出为 app/data.json，供手机 Web App 使用。
+    将所有类别的通知导出为 docs/data.json，供手机 Web App 使用。
 
-    也会复制 index.html / manifest.json / sw.js 到 app 目录。
+    导出全部类别（App 要能分类浏览），同时带上类别元数据，
+    前端就不用再硬编码一份分类表。
     """
     logger = logging.getLogger(__name__)
 
     # 获取所有已存储的通知（最近 60 天）
-    all_stored = storage.get_recent(days=60)
-    # 只导出 competition 和 holiday
-    export_notices = [
-        n for n in all_stored
-        if n.get("category") in ("competition", "holiday")
-    ]
+    export_notices = storage.get_recent(days=60)
 
     if not export_notices:
         logger.warning("没有需要导出的通知数据")
@@ -106,6 +102,13 @@ def export_app_data(storage: NoticeStorage, config: dict):
     data = {
         "updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total": len(export_notices),
+        "summary_coverage": f"{sum(1 for n in export_notices if n.get('summary'))}/{len(export_notices)}",
+        "categories": {
+            k: {"label": v["label"], "emoji": v["emoji"],
+                "color": v["color"], "color_dk": v["color_dk"]}
+            for k, v in CATEGORIES.items()
+        },
+        "push_categories": PUSH_CATEGORIES,
         "notices": export_notices,
     }
 
@@ -256,74 +259,80 @@ def cmd_run(config: dict, dry_run: bool = False):
     # ---- 3. 分类 ----
     categorized = classifier.classify_batch(notices)
 
-    competition = categorized["competition"]
-    holiday = categorized["holiday"]
-
     # 显示分类结果
     print()
     print("=" * 60)
     print(f"  📊 抓取结果: 共 {len(notices)} 条通知")
-    print(f"     🏆 竞赛通知: {len(competition)} 条")
-    print(f"     📅 节假日通知: {len(holiday)} 条")
-    print(f"     📌 其他通知: {len(categorized['other'])} 条")
+    for key in CATEGORY_ORDER:
+        items = categorized[key]
+        if not items:
+            continue
+        meta = CATEGORIES[key]
+        mark = "→推送" if key in PUSH_CATEGORIES else "     "
+        print(f"     {meta['emoji']} {meta['label']}: {len(items)} 条 {mark}")
     print("=" * 60)
     print()
 
     # ---- 4. 去重 & 存储 ----
-    new_competition = []
-    new_holiday = []
+    # 全部类别都入库（App 要能分类浏览），只有 PUSH_CATEGORIES 会推微信
+    new_by_cat = {key: [] for key in CATEGORY_ORDER}
+    for key in CATEGORY_ORDER:
+        for notice in categorized[key]:
+            if storage.is_new(notice):
+                storage.save(notice)
+                new_by_cat[key].append(notice)
 
-    for notice in competition:
-        if storage.is_new(notice):
-            storage.save(notice)
-            new_competition.append(notice)
+    logger.info("去重结果: " + ", ".join(
+        f"{CATEGORIES[k]['label']} {len(new_by_cat[k])}/{len(categorized[k])}"
+        for k in CATEGORY_ORDER if categorized[k]
+    ))
 
-    for notice in holiday:
-        if storage.is_new(notice):
-            storage.save(notice)
-            new_holiday.append(notice)
-
-    logger.info(
-        f"去重结果: 竞赛 {len(new_competition)}/{len(competition)} 条新通知, "
-        f"节假日 {len(new_holiday)}/{len(holiday)} 条新通知"
-    )
+    # ---- 4b. 正文简介 ----
+    # 新通知抓正文摘要；库里缺摘要的老通知顺带补上（有预算上限）
+    existing = storage.get_recent(days=60)
+    missing = [n for n in existing if not n.get("summary")]
+    queue = [n for k in PUSH_CATEGORIES for n in new_by_cat[k]] + missing
+    queue = queue[:30]
+    if queue:
+        logger.info(f"📝 抓取正文简介: {len(queue)} 条...")
+        got = 0
+        for n in queue:
+            text = scraper.fetch_article_summary(n["link"])
+            if text:
+                n["summary"] = text
+                got += 1
+        logger.info(f"   成功 {got}/{len(queue)} 条")
+        storage.update_summaries(queue)
 
     # ---- 5. 显示新通知 ----
-    if new_competition:
-        print("🏆 ==== 新竞赛通知 ====")
-        for i, n in enumerate(new_competition, 1):
+    for key in CATEGORY_ORDER:
+        items = new_by_cat[key]
+        if not items:
+            continue
+        meta = CATEGORIES[key]
+        suffix = "（将推送）" if key in PUSH_CATEGORIES else "（仅 App）"
+        print(f"{meta['emoji']} ==== 新{meta['label']} {suffix} ====")
+        for i, n in enumerate(items, 1):
             print(f"  {i}. [{n['date']}] {n['title']}")
             print(f"     🔗 {n['link']}")
         print()
 
-    if new_holiday:
-        print("📅 ==== 新节假日通知 ====")
-        for i, n in enumerate(new_holiday, 1):
-            print(f"  {i}. [{n['date']}] {n['title']}")
-            print(f"     🔗 {n['link']}")
+    if not any(new_by_cat.values()):
+        print("✅ 没有新通知。")
         print()
 
-    if not new_competition and not new_holiday:
-        print("✅ 没有新的竞赛或节假日通知。")
-        print()
-
-    # ---- 6. 推送 ----
+    # ---- 6. 推送（只推 PUSH_CATEGORIES） ----
     if dry_run:
         logger.info("🔍 Dry-run 模式，跳过推送")
     else:
-        if new_competition:
-            logger.info("📤 推送竞赛通知...")
-            result = pusher.push_category("competition", new_competition)
+        for key in PUSH_CATEGORIES:
+            items = new_by_cat[key]
+            if not items:
+                continue
+            logger.info(f"📤 推送{CATEGORIES[key]['label']}...")
+            result = pusher.push_category(key, items)
             if result["pushplus"] or result["wechat_test"] > 0:
-                for notice in new_competition:
-                    storage.mark_pushed(notice, push_method=pusher.mode)
-            print()
-
-        if new_holiday:
-            logger.info("📤 推送节假日通知...")
-            result = pusher.push_category("holiday", new_holiday)
-            if result["pushplus"] or result["wechat_test"] > 0:
-                for notice in new_holiday:
+                for notice in items:
                     storage.mark_pushed(notice, push_method=pusher.mode)
             print()
 

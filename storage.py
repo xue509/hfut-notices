@@ -39,12 +39,16 @@ class NoticeStorage:
                 link        TEXT NOT NULL,
                 source_tab  TEXT DEFAULT '',
                 category    TEXT DEFAULT 'other',
+                sub_label   TEXT DEFAULT '',
+                summary     TEXT DEFAULT '',
                 pushed      INTEGER DEFAULT 0,
                 pushed_at   TEXT,
                 push_method TEXT,
                 created_at  TEXT DEFAULT (datetime('now','localtime'))
             )
         """)
+        # 迁移: 老库没有 sub_label 列（v3 分类才引入）
+        self._migrate()
         # 索引
         self.conn.execute("""
             CREATE INDEX IF NOT EXISTS idx_url_hash ON notices(url_hash)
@@ -57,6 +61,15 @@ class NoticeStorage:
         """)
         self.conn.commit()
         logger.debug(f"数据库已初始化: {self.db_path}")
+
+    def _migrate(self):
+        """给老数据库补上后加的列（幂等）"""
+        existing = {row[1] for row in self.conn.execute("PRAGMA table_info(notices)")}
+        for col, ddl in (("sub_label", "TEXT DEFAULT ''"),
+                         ("summary", "TEXT DEFAULT ''")):
+            if col not in existing:
+                self.conn.execute(f"ALTER TABLE notices ADD COLUMN {col} {ddl}")
+                logger.info(f"数据库迁移: 已添加列 {col}")
 
     def is_new(self, notice: dict) -> bool:
         """检查通知是否未见过（基于 URL hash）"""
@@ -82,8 +95,8 @@ class NoticeStorage:
             self.conn.execute(
                 """
                 INSERT OR IGNORE INTO notices
-                    (url_hash, title, date, link, source_tab, category)
-                VALUES (?, ?, ?, ?, ?, ?)
+                    (url_hash, title, date, link, source_tab, category, sub_label)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     url_hash,
@@ -92,6 +105,7 @@ class NoticeStorage:
                     notice["link"],
                     notice.get("source_tab", ""),
                     notice.get("category", "other"),
+                    notice.get("sub_label", ""),
                 ),
             )
             self.conn.commit()
@@ -103,6 +117,20 @@ class NoticeStorage:
         for notice in notices:
             self.save(notice)
         logger.debug(f"批量保存 {len(notices)} 条记录")
+
+    def update_summaries(self, notices: list[dict]):
+        """回写正文摘要（抓正文是网络请求，跟 save 分开做）"""
+        rows = [
+            (n["summary"], self._hash_url(n["link"]))
+            for n in notices if n.get("summary")
+        ]
+        if not rows:
+            return
+        self.conn.executemany(
+            "UPDATE notices SET summary = ? WHERE url_hash = ?", rows
+        )
+        self.conn.commit()
+        logger.debug(f"回写 {len(rows)} 条摘要")
 
     def mark_pushed(
         self,
@@ -129,26 +157,15 @@ class NoticeStorage:
 
     def get_unpushed(self, category: Optional[str] = None) -> list[dict]:
         """获取所有未推送的通知，可按分类筛选"""
+        sql = ("SELECT title, date, link, source_tab, category, sub_label "
+               "FROM notices WHERE pushed = 0")
+        params = ()
         if category:
-            cursor = self.conn.execute(
-                """
-                SELECT title, date, link, source_tab, category
-                FROM notices
-                WHERE pushed = 0 AND category = ?
-                ORDER BY date DESC
-                """,
-                (category,),
-            )
-        else:
-            cursor = self.conn.execute(
-                """
-                SELECT title, date, link, source_tab, category
-                FROM notices
-                WHERE pushed = 0
-                ORDER BY date DESC
-                """
-            )
+            sql += " AND category = ?"
+            params = (category,)
+        sql += " ORDER BY date DESC"
 
+        cursor = self.conn.execute(sql, params)
         return [
             {
                 "title": row[0],
@@ -156,6 +173,7 @@ class NoticeStorage:
                 "link": row[2],
                 "source_tab": row[3],
                 "category": row[4],
+                "sub_label": row[5] or "",
             }
             for row in cursor.fetchall()
         ]
@@ -170,27 +188,15 @@ class NoticeStorage:
 
         cutoff = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
 
+        sql = ("SELECT title, date, link, source_tab, category, sub_label, "
+               "summary, pushed FROM notices WHERE date >= ?")
+        params = [cutoff]
         if category:
-            cursor = self.conn.execute(
-                """
-                SELECT title, date, link, source_tab, category, pushed
-                FROM notices
-                WHERE date >= ?
-                ORDER BY date DESC
-                """,
-                (cutoff,),
-            )
-        else:
-            cursor = self.conn.execute(
-                """
-                SELECT title, date, link, source_tab, category, pushed
-                FROM notices
-                WHERE date >= ?
-                ORDER BY date DESC
-                """,
-                (cutoff,),
-            )
+            sql += " AND category = ?"
+            params.append(category)
+        sql += " ORDER BY date DESC"
 
+        cursor = self.conn.execute(sql, params)
         return [
             {
                 "title": row[0],
@@ -198,31 +204,34 @@ class NoticeStorage:
                 "link": row[2],
                 "source_tab": row[3],
                 "category": row[4],
-                "pushed": bool(row[5]),
+                "sub_label": row[5] or "",
+                "summary": row[6] or "",
+                "pushed": bool(row[7]),
             }
             for row in cursor.fetchall()
         ]
 
     def get_stats(self) -> dict:
         """获取数据库统计"""
+        # 按类别统计，新增类别不用改这里
         cursor = self.conn.execute(
-            """
-            SELECT
-                COUNT(*) as total,
-                SUM(CASE WHEN category='competition' THEN 1 ELSE 0 END) as competition,
-                SUM(CASE WHEN category='holiday' THEN 1 ELSE 0 END) as holiday,
-                SUM(CASE WHEN pushed=1 THEN 1 ELSE 0 END) as pushed,
-                SUM(CASE WHEN pushed=0 THEN 1 ELSE 0 END) as unpushed
-            FROM notices
-            """
+            "SELECT category, COUNT(*) FROM notices GROUP BY category"
+        )
+        by_cat = {row[0]: row[1] for row in cursor.fetchall()}
+
+        cursor = self.conn.execute(
+            "SELECT SUM(CASE WHEN pushed=1 THEN 1 ELSE 0 END), "
+            "SUM(CASE WHEN pushed=0 THEN 1 ELSE 0 END) FROM notices"
         )
         row = cursor.fetchone()
+
         return {
-            "total": row[0] or 0,
-            "competition": row[1] or 0,
-            "holiday": row[2] or 0,
-            "pushed": row[3] or 0,
-            "unpushed": row[4] or 0,
+            "total": sum(by_cat.values()),
+            "by_category": by_cat,
+            "competition": by_cat.get("competition", 0),
+            "holiday": by_cat.get("holiday", 0),
+            "pushed": row[0] or 0,
+            "unpushed": row[1] or 0,
         }
 
     @staticmethod
