@@ -672,7 +672,7 @@ class NoticeScraper:
         if not any(w in ranked[1] for w in cls._ACTION_WORDS) \
                 and not any(c.isdigit() for c in ranked[1]) \
                 and cls._title_overlap(title, ranked[1]) < 0.5:
-            return digest or ranked[2]
+            return digest or cls._tidy(ranked[2])
         # 挑中的是通用办事流程话术，又不带任何日期/数字 —— 十几条通知共用
         # 同一句，标题剥壳反而能说清这是哪条
         if digest and cls._GENERIC_BODY_RE.search(ranked[1]) \
@@ -690,7 +690,7 @@ class NoticeScraper:
         # 「…并提交至所」这种半截话比复述标题难看得多
         if digest and not cls._cut_clean(ranked[2], ranked[3]):
             return digest
-        return ranked[2]
+        return cls._tidy(ranked[2])
 
     @classmethod
     def _is_unusable(cls, text: str) -> bool:
@@ -724,6 +724,24 @@ class NoticeScraper:
         return False
 
     @classmethod
+    def _tidy(cls, shown: str) -> str:
+        """
+        收尾：摘掉截断处孤零零掉下来的虚词和序号。
+
+        「…全景动态机制与」「…创新成果征集的」「…新征程二」—— 单看都像被
+        咬了一口。摘到不能再摘为止，但摘完不足 5 个字就作罢（宁可留个
+        带虚词的，也别把「停气通知」摘成「停气」）。
+        """
+        out = shown
+        for _ in range(3):
+            nxt = _TRAIL_PARTICLE_RE.sub('', out.rstrip("，。、；：—－· "))
+            nxt = _TRAIL_ORDINAL_RE.sub('', nxt.rstrip("，。、；：、.． "))
+            if nxt == out or len(nxt) < 5:
+                break
+            out = nxt
+        return out
+
+    @classmethod
     def _title_digest(cls, title: str, limit: int = SHORT_MAX) -> str:
         """
         正文指不上时，把标题剥掉公文壳当简介。
@@ -755,8 +773,8 @@ class NoticeScraper:
             for m in re.finditer(r'[：:——]|”|(?:发布|印发|转发|关于)', t):
                 tail = t[m.end():].lstrip("—－：: ")
                 if 8 <= len(tail) <= limit and _balanced(tail):
-                    return tail
-        return cls._clip(t, limit)
+                    return cls._tidy(tail)
+        return cls._tidy(cls._clip(t, limit))
 
     @staticmethod
     def _normalize_space(text: str) -> str:
@@ -1004,16 +1022,71 @@ class NoticeScraper:
         nxt = source[len(shown):len(shown) + 1]
         return not nxt or nxt in "，。、；：！？暨和及《（(【〔“"
 
-    def fetch_recent_notices(self, days: int = 7, pages: int = 3) -> list[dict]:
-        """获取最近 N 天内的通知"""
+    def fetch_since(self, days: int = 180, max_pages: int = 60,
+                    sources: Optional[list] = None) -> list[dict]:
+        """
+        抓最近 days 天的通知（往回翻到 cutoff 为止）。
+
+        不能用 fetch_all(pages=N) 顶 —— 列表页的分页区只放 7 个链接
+        （首页 / 上一页 / 几个页码 / 末页），max_pages 再大也只够到第 4 页，
+        新闻网那种一天两三条的来源三天就到底了。
+
+        好在页码和时间是对齐的：1.htm 是最老的一页，编号越大越新，首页
+        其实是最新那页。所以从首页拿最大编号，一页页往下减着走，哪页最老
+        的日期早于 cutoff 就收工。4 个来源的编号规律一致，只有目录不同。
+        """
         from datetime import datetime, timedelta
 
-        all_notices = self.fetch_all(pages=pages)
         cutoff = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        all_notices, seen_keys = [], set()
 
-        recent = [n for n in all_notices if n["date"] >= cutoff]
-        logger.info(f"最近 {days} 天内共 {len(recent)} 条通知")
-        return recent
+        for src in (sources or SOURCES):
+            name = src["name"]
+            html = self.fetch_page(src["url"])
+            if not html:
+                logger.warning(f"[{name}] 首页抓取失败，跳过该来源")
+                continue
+
+            items, walked = [], 0
+            first = self.parse_notice_list(html, name, src["list"], src["date"])
+            _append_unique(items, set(), first)
+
+            urls = self._get_page_urls(html, src, 2)
+            m = re.search(r'^(.*/)(\d+)\.htm$', urls[0]) if urls else None
+            if not m:
+                logger.warning(f"[{name}] 没有分页链接，只能拿到首页 {len(items)} 条")
+            else:
+                prefix, num = m.group(1), int(m.group(2))
+                while num > 1 and walked < max_pages:
+                    num -= 1
+                    walked += 1
+                    page_html = self.fetch_page(f"{prefix}{num}.htm")
+                    if not page_html:
+                        break
+                    page_items = self.parse_notice_list(
+                        page_html, name, src["list"], src["date"])
+                    if not page_items:
+                        break
+                    _append_unique(items, set(), page_items)
+                    if min(n["date"] for n in page_items) < cutoff:
+                        break
+
+            kept = [n for n in items if n["date"] >= cutoff]
+            logger.info(f"[{name}] 翻 {walked + 1} 页，{len(kept)}/{len(items)} 条在 "
+                        f"最近 {days} 天内 (最早 {min((n['date'] for n in items), default='-')})")
+            for n in kept:
+                key = self._dedup_key(n["link"])
+                if key not in seen_keys:
+                    seen_keys.add(key)
+                    all_notices.append(n)
+
+        all_notices.sort(key=lambda x: x["date"], reverse=True)
+        logger.info(f"最近 {days} 天共 {len(all_notices)} 条通知")
+        return all_notices
+
+    def fetch_recent_notices(self, days: int = 7) -> list[dict]:
+        """获取最近 N 天内的通知（往回翻页，不是只看头几页）"""
+        return self.fetch_since(days=days)
 
 
 _BRACKET_OPEN = "《（(【〔“"
@@ -1035,7 +1108,17 @@ def _last_sep(head: str, sep: str) -> int:
     return -1
 
 
-_BARE_DATE_RE = re.compile(r'[\d年月日\-—－~～:：.至到\s]+')
+_BARE_DATE_RE = re.compile(r'[\d年月日\-—～:：.至到\s]+')
+
+# 截断处掉下来的虚词。只收 的/和/与/及/或/并/而/把/将/从/以 这几个几乎
+# 不会收尾的字 —— 「技术攻关方向」的「向」、「以…为」的「为」都是真词，
+# 摘了反而成了「…攻关方」。
+_TRAIL_PARTICLE_RE = re.compile(r'(?:的|和|与|及|或|并|而|把|将|从|以|暨)$')
+
+# 黏在句尾的节序号（「活动时间2026年6月三」）。
+# 「唯一/统一/第十一」这类词尾也是「一」，加个前置排除免得摘错。
+_TRAIL_ORDINAL_RE = re.compile(
+    r'(?<![唯统专单均归划十百万千])[一二三四五六七八九十]{1,2}$')
 
 
 def _is_bare_date(text: str) -> bool:
@@ -1051,6 +1134,17 @@ def _balanced(text: str) -> bool:
     return True
 
 
+def _last_unclosed(head: str) -> int:
+    """head 里最后一个没配上对的开括号位置。都有配对就返回 -1。"""
+    stack = []
+    for i, c in enumerate(head):
+        if c in _BRACKET_OPEN:
+            stack.append(i)
+        elif c in "》）》】〕”" and stack:
+            stack.pop()
+    return stack[-1] if stack else -1
+
+
 def _bracket_safe(text: str, limit: int) -> str:
     """
     截到 limit 个字符，但不能把书名号/括号切一半。
@@ -1059,11 +1153,13 @@ def _bracket_safe(text: str, limit: int) -> str:
     最后一截断在《》里，读起来像乱码。宁可退回到那个括号之前。
     """
     head = text[:limit]
-    if _balanced(head):
-        return head
-    for i in range(len(head) - 1, -1, -1):
-        if text[i] in _BRACKET_OPEN:
-            return text[:i]
+    # 退一次不够：「…指导教师（以下简称“博导」同时张着括号和引号，
+    # 退回引号之前括号还是开的，得一直退到配对为止
+    for _ in range(4):
+        i = _last_unclosed(head)
+        if i < 0:
+            return head
+        head = head[:i]
     return head
 
 
@@ -1090,7 +1186,11 @@ if __name__ == "__main__":
 
     only = sys.argv[1] if len(sys.argv) > 1 else None
     srcs = [s for s in SOURCES if not only or only in s["name"]]
-    notices = scraper.fetch_all(pages=2, sources=srcs)
+    # 第二个参数给天数就走回溯抓取，不给就还是只抓最新两页
+    if len(sys.argv) > 2 and sys.argv[2].isdigit():
+        notices = scraper.fetch_since(days=int(sys.argv[2]), sources=srcs)
+    else:
+        notices = scraper.fetch_all(pages=2, sources=srcs)
 
     print(f"\n共 {len(notices)} 条\n" + "=" * 70)
     for n in notices[:25]:
