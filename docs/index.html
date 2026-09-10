@@ -24,6 +24,16 @@
   --radius-sm: 12px; --radius: 18px; --radius-lg: 24px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* 底部导航的玻璃质感：底色要够透才看得见下面的内容，否则就是块白板。
+     透到什么程度都能算，所以标签再加一圈同色描边（--tab-halo），
+     不管底下飘过去什么颜色，字都不会糊。 */
+  --glass-bg: rgba(255,255,255,.70);
+  --glass-line: rgba(255,255,255,.55);
+  --glass-hi: rgba(255,255,255,.75);
+  --glass-sheen: rgba(255,255,255,.5);
+  --glass-blob: rgba(175,34,39,.10);
+  --tab-halo: rgba(255,255,255,.9);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -31,6 +41,12 @@
     --border: #2D3138; --shadow-sm: 0 1px 2px rgba(0,0,0,.2); --shadow-md: 0 2px 12px rgba(0,0,0,.3); --shadow-lg: 0 8px 24px rgba(0,0,0,.4);
     --brand: #F87171; --brand-dark: #EF4444; --brand-tint: #2A1416;
     --brand-gradient: linear-gradient(135deg, #6B1418 0%, #8E1B1F 45%, #AF2227 100%);
+    --glass-bg: rgba(20,23,28,.60);
+    --glass-line: rgba(255,255,255,.07);
+    --glass-hi: rgba(255,255,255,.10);
+    --glass-sheen: rgba(255,255,255,.06);
+    --glass-blob: rgba(248,113,113,.16);
+    --tab-halo: rgba(0,0,0,.75);
   }
 }
 
@@ -111,13 +127,32 @@ a { color:var(--brand); text-decoration:none }
 @keyframes spin { to { transform:rotate(360deg) } }
 
 /* ===== Bottom Nav ===== */
-.tab-bar { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border); display:flex; z-index:100; padding:0 16px; padding-bottom:var(--safe-bottom); box-shadow:0 -2px 12px rgba(0,0,0,.04) }
-.tab-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 0 6px; border:none; background:none; cursor:pointer; color:var(--text3); transition:all .2s; position:relative }
-.tab-item .tb-icon { font-size:21px; transition:transform .2s }
-.tab-item .tb-label { font-size:10px; font-weight:500; margin-top:2px }
+/* ===== Bottom Tab Bar（液态玻璃） ===== */
+.tab-bar { position:fixed; bottom:0; left:0; right:0; z-index:100; display:flex; padding:0 8px; padding-bottom:var(--safe-bottom);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
+  border-top:1px solid var(--glass-line);
+  box-shadow:0 -6px 28px rgba(0,0,0,.10), inset 0 1px 0 var(--glass-hi); }
+/* 顶部高光渐变 —— 玻璃的「反光边」，中间亮两边淡 */
+.tab-bar::before { content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:linear-gradient(180deg, var(--glass-sheen) 0%, transparent 52%) }
+/* 跟随选中项滑动的玻璃药丸 */
+.tab-blob { position:absolute; left:0; top:6px; z-index:0; height:calc(100% - 12px - var(--safe-bottom)); border-radius:16px;
+  background:var(--glass-blob); box-shadow:inset 0 1px 0 var(--glass-hi), 0 1px 6px rgba(0,0,0,.05);
+  transition:transform .42s cubic-bezier(.34,1.28,.5,1), width .42s cubic-bezier(.34,1.28,.5,1), opacity .2s }
+.tab-blob.init { transition:none }
+/* 未选中用 text2 而不是 text3 —— 10px 小字压在玻璃上，#9AA0A6 只有 2.7:1，
+   逼到眼睛跟前才看得清；#5F6368 有 6.5:1。选中/未选中靠红色和药丸区分已经够了。 */
+.tab-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 0 6px; border:none; background:none; cursor:pointer; color:var(--text2); transition:color .2s, transform .2s; position:relative; z-index:1 }
+.tab-item .tb-icon { font-size:21px; transition:transform .25s cubic-bezier(.34,1.4,.5,1) }
+.tab-item .tb-label { font-size:10px; font-weight:500; margin-top:2px; text-shadow:0 0 6px var(--tab-halo), 0 0 3px var(--tab-halo) }
 .tab-item.active { color:var(--brand) }
-.tab-item.active .tb-icon { transform:translateY(-1px) }
-.tab-item.active::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:24px; height:3px; background:var(--brand); border-radius:0 0 3px 3px }
+.tab-item.active .tb-icon { transform:translateY(-1px) scale(1.08) }
+/* 不支持 backdrop-filter 的老浏览器（含部分国产内核）退回不透明底 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tab-bar { background:var(--card) }
+  .tab-blob { background:var(--bg) }
+}
 
 /* ===== Search Overlay ===== */
 .search-overlay { display:none; position:fixed; inset:0; background:var(--bg); z-index:300; padding:16px; padding-top:calc(16px + env(safe-area-inset-top, 0px)); overflow-y:auto }
@@ -142,6 +177,10 @@ a { color:var(--brand); text-decoration:none }
 .about-card h2 { font-size:20px; font-weight:700; margin-bottom:4px }
 .about-card .aver { font-size:12px; color:var(--text3); margin-bottom:18px }
 .about-card p { font-size:13px; color:var(--text2); line-height:2 }
+.about-groups { margin-top:14px; text-align:left }
+.about-group { display:flex; align-items:baseline; gap:8px; padding:7px 10px; border-radius:10px; background:var(--bg); margin-bottom:5px }
+.about-group .ag-name { font-size:12px; font-weight:600; color:var(--text); white-space:nowrap }
+.about-group .ag-cats { font-size:11px; color:var(--text3); line-height:1.5 }
 .about-cats { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px }
 .about-cat { font-size:11px; padding:4px 10px; border-radius:12px; background:var(--bg); color:var(--text2) }
 .dark-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:24px; background:var(--bg); border:1px solid var(--border); color:var(--text); font-size:13px; font-weight:500; cursor:pointer; margin-top:14px; transition:all .15s }
@@ -177,15 +216,15 @@ a { color:var(--brand); text-decoration:none }
     </div>
   </div>
   <div class="stats-row">
-    <div class="stat-item" onclick="switchTab('all','')">
+    <div class="stat-item" onclick="switchTab('all','','')">
       <div class="stat-num" id="totalCount">-</div>
       <div class="stat-label">📬 近 60 天</div>
     </div>
-    <div class="stat-item" onclick="switchTab('competition','')">
+    <div class="stat-item" onclick="jumpToCat('competition')">
       <div class="stat-num gold" id="compCount">-</div>
       <div class="stat-label">🏆 竞赛</div>
     </div>
-    <div class="stat-item" onclick="switchTab('holiday','')">
+    <div class="stat-item" onclick="jumpToCat('holiday')">
       <div class="stat-num gold" id="holidayCount">-</div>
       <div class="stat-label">📅 节假日</div>
     </div>
@@ -215,8 +254,9 @@ a { color:var(--brand); text-decoration:none }
       🏫 监控 4 个官方来源<br>
       🏆 竞赛 · 节假日 推送微信<br>
       📱 PushPlus 实时通知<br>
-      简介 · 深色模式 · 七类归档
+      30 字简介 · 深色模式 · 八大分类
     </p>
+    <div class="about-groups" id="aboutGroups"></div>
     <div class="about-cats" id="aboutCats"></div>
     <p style="margin-top:14px">
       <a href="https://news.hfut.edu.cn/tzgg2.htm" target="_blank">🔗 访问官网</a>
@@ -227,21 +267,8 @@ a { color:var(--brand); text-decoration:none }
   </div>
 </div>
 
-<!-- Bottom tab bar -->
-<div class="tab-bar">
-  <button class="tab-item active" id="nav0" onclick="switchTab('all','')">
-    <span class="tb-icon">🏠</span><span class="tb-label">全部</span>
-  </button>
-  <button class="tab-item" id="nav1" onclick="switchTab('competition','')">
-    <span class="tb-icon">🏆</span><span class="tb-label">竞赛</span>
-  </button>
-  <button class="tab-item" id="nav2" onclick="switchTab('holiday','')">
-    <span class="tb-icon">📅</span><span class="tb-label">节假日</span>
-  </button>
-  <button class="tab-item" id="nav3" onclick="showPage('about')">
-    <span class="tb-icon">⚙</span><span class="tb-label">关于</span>
-  </button>
-</div>
+<!-- Bottom tab bar —— 大分类由 data.json 的 groups 渲染，见 renderNav() -->
+<div class="tab-bar" id="tabBar"></div>
 
 <!-- Search overlay -->
 <div class="search-overlay" id="searchOverlay">
@@ -258,8 +285,10 @@ a { color:var(--brand); text-decoration:none }
 
 <script>
 // ===== State =====
-// CATS 由 data.json 注入（后端 classifier.py 是唯一权威来源，前端不另写一份）
-let allNotices = [], CATS = {}, currentTab = 'all', currentSub = '', currentPage = 'home';
+// CATS / GROUPS 由 data.json 注入（后端 classifier.py 是唯一权威来源，前端不另写一份）
+// 三级：currentTab 大分类(或 'all') → currentCat 细分类 → currentSub 板块标签
+let allNotices = [], CATS = {}, GROUPS = [];
+let currentTab = 'all', currentCat = '', currentSub = '', currentPage = 'home';
 let darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 // ===== 深色模式 =====
@@ -274,6 +303,12 @@ function applyDark() {
     '--brand': darkMode ? '#F87171' : '#AF2227',
     '--brand-dark': darkMode ? '#EF4444' : '#8E1B1F',
     '--brand-tint': darkMode ? '#2A1416' : '#FDF2F2',
+    '--glass-bg': darkMode ? 'rgba(20,23,28,.60)' : 'rgba(255,255,255,.70)',
+    '--glass-line': darkMode ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.55)',
+    '--glass-hi': darkMode ? 'rgba(255,255,255,.10)' : 'rgba(255,255,255,.75)',
+    '--glass-sheen': darkMode ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.5)',
+    '--glass-blob': darkMode ? 'rgba(248,113,113,.16)' : 'rgba(175,34,39,.10)',
+    '--tab-halo': darkMode ? 'rgba(0,0,0,.75)' : 'rgba(255,255,255,.9)',
   };
   Object.entries(keys).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
   document.getElementById('darkIcon').textContent = darkMode ? '☀️' : '🌙';
@@ -304,14 +339,26 @@ async function loadData() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     CATS = d.categories || {};
+    GROUPS = d.groups || [];
     allNotices = (d.notices || []).slice();
     allNotices.sort((a,b) => (b.date||'').localeCompare(a.date||''));
   } catch(e) {
     allNotices = sampleData();
     CATS = sampleCats();
+    GROUPS = sampleGroups();
   }
+  renderNav();
   renderAbout();
   render();
+}
+
+function sampleGroups() {
+  return [
+    {key:'study',   label:'学习', emoji:'📚', categories:['research','academic','competition']},
+    {key:'life',    label:'生活', emoji:'🏠', categories:['support','holiday']},
+    {key:'affair',  label:'学工', emoji:'🎯', categories:['student']},
+    {key:'bulletin',label:'公告', emoji:'📢', categories:['notice']},
+  ];
 }
 
 function sampleCats() {
@@ -337,12 +384,29 @@ async function refreshData() {
 }
 
 // ===== 渲染 =====
+function groupOf(cat) { return GROUPS.find(g => (g.categories||[]).includes(cat)) || null; }
+
+// 大分类下的条数
+function groupCount(key) {
+  const g = GROUPS.find(x => x.key === key);
+  if (!g) return 0;
+  return allNotices.filter(n => (g.categories||[]).includes(n.category)).length;
+}
+
+// 当前筛选范围。三个条件层层收窄，空串/null 表示不限。
+function inScope(n) {
+  if (currentTab !== 'all') {
+    const g = GROUPS.find(x => x.key === currentTab);
+    if (!g || !(g.categories||[]).includes(n.category)) return false;
+  }
+  if (currentCat && n.category !== currentCat) return false;
+  if (currentSub && (n.sub_label||'') !== currentSub) return false;
+  return true;
+}
+
 function render() {
-  let filtered = currentTab === 'all'
-    ? allNotices.slice()
-    : allNotices.filter(n => n.category === currentTab);
-  if (currentSub) filtered = filtered.filter(n => (n.sub_label||'') === currentSub);
-  filtered.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  const filtered = allNotices.filter(inScope)
+    .sort((a,b) => (b.date||'').localeCompare(a.date||''));
 
   // 概览
   document.getElementById('totalCount').textContent = allNotices.length;
@@ -354,10 +418,14 @@ function render() {
   const groups = dateGroups(filtered);
   let html = '';
   if (filtered.length === 0) {
-    // 「全部」空 = 真没抓到；某分类空 = 多半只是 60 天窗口内没有，别混为一谈
-    const what = (currentTab === 'all' && !currentSub)
-      ? '暂时没抓到通知'
-      : ((CATS[currentTab] || {}).label || '该类') + '在近 60 天内没有通知';
+    // 「全部」空 = 真没抓到；收窄过的范围空 = 多半只是 60 天窗口内没有，别混为一谈
+    const narrowed = currentTab !== 'all' || currentCat || currentSub;
+    let what = '暂时没抓到通知';
+    if (narrowed) {
+      const label = (CATS[currentCat] || {}).label ||
+                    (GROUPS.find(g => g.key === currentTab) || {}).label || '该类';
+      what = label + '在近 60 天内没有通知';
+    }
     html = '<div class="empty"><span class="em-icon">📭</span>' +
            '<div class="em-text">' + esc(what) + '</div></div>';
   } else {
@@ -372,6 +440,12 @@ function render() {
 
 function countOf(key) { return allNotices.filter(n => n.category === key).length; }
 
+// 从首页统计卡直接跳到某个细分类（所属大分类现查，不写死）
+function jumpToCat(cat) {
+  const g = groupOf(cat);
+  if (g) switchTab(g.key, cat, ''); else switchTab('all', '', '');
+}
+
 function cardHtml(n, withDetail) {
   const cat = n.category || 'other';
   const meta = CATS[cat] || {};
@@ -379,6 +453,9 @@ function cardHtml(n, withDetail) {
   const emoji = meta.emoji || '📌';
   const color = catColor(cat), tint = catTint(cat);
   const summary = n.summary || '';
+  // 卡片上只放 30 字短简介；展开后才给全文。短简介为空说明正文只是复述标题，
+  // 这时留白比挂一句废话干净。
+  const brief = n.summary_short || '';
 
   // 简介始终显示（2 行截断），点开看全文 + 原文链接
   let html = '<div class="card" style="--cat-c:' + color + ';--cat-tint:' + tint + '" ' +
@@ -392,7 +469,7 @@ function cardHtml(n, withDetail) {
       (sub ? '<span class="card-tag">' + esc(sub) + '</span>' : '') +
       '<span class="card-source">' + esc(n.source_tab||'') + '</span>' +
     '</div>' +
-    (summary ? '<div class="card-summary">' + esc(summary) + '</div>' : '') +
+    (brief ? '<div class="card-summary">' + esc(brief) + '</div>' : '') +
     '<div class="card-chevron">▶</div>' +
     '<div class="card-detail">' +
       '<div class="detail-row"><span class="dl">🏷️</span>' +
@@ -406,39 +483,65 @@ function cardHtml(n, withDetail) {
   return html;
 }
 
-function renderPills() {
-  // 有内容的类别才显示，避免空药丸
-  const keys = Object.keys(CATS).filter(k => countOf(k) > 0);
-  let html = '';
-  const allActive = currentTab === 'all' && !currentSub;
-  html += '<button class="pill' + (allActive ? ' on' : '') + '" ' +
-          'style="--pill-c:var(--brand)" onclick="switchTab(\'all\',\'\')">' +
-          '📬 全部 <span class="pill-n">' + allNotices.length + '</span></button>';
+function pillHtml(on, color, onclick, inner) {
+  return '<button class="pill' + (on ? ' on' : '') + '" style="--pill-c:' + color + '" ' +
+         'onclick="' + onclick + '">' + inner + '</button>';
+}
 
-  for (const k of keys) {
+// 组里有内容的细分类
+function groupCatKeys() {
+  const g = GROUPS.find(x => x.key === currentTab);
+  return ((g || {}).categories || []).filter(k => countOf(k) > 0);
+}
+
+function subKeys(cat) {
+  return [...new Set(allNotices.filter(n => n.category === cat)
+                             .map(n => n.sub_label).filter(Boolean))];
+}
+
+// 药丸条什么时候值得出现:
+//   全部页 —— 大分类已经在底栏上了，再列一遍是重复
+//   组里只有一个有内容的细分类 —— 「全部」就等于它，没什么可筛的
+function pillsVisible() {
+  if (currentPage !== 'home' || currentTab === 'all') return false;
+  if (groupCatKeys().length > 1) return true;
+  return currentCat ? subKeys(currentCat).length > 1 : false;
+}
+
+function renderPills() {
+  const inner = document.getElementById('pillsInner');
+  if (!pillsVisible()) { inner.innerHTML = ''; return; }
+
+  const g = GROUPS.find(x => x.key === currentTab) || {categories: []};
+  const cats = groupCatKeys();
+  const tab = currentTab;
+
+  let html = pillHtml(!currentCat && !currentSub, 'var(--brand)',
+    "switchTab('" + tab + "','','')",
+    (g.emoji||'') + ' 全部 <span class="pill-n">' + groupCount(tab) + '</span>');
+
+  for (const k of cats) {
     const meta = CATS[k];
-    const active = currentTab === k && !currentSub;
-    html += '<button class="pill' + (active ? ' on' : '') + '" ' +
-            'style="--pill-c:' + catColor(k) + '" onclick="switchTab(\'' + k + '\',\'\')">' +
-            (meta.emoji||'') + ' ' + esc(meta.label||k) +
-            ' <span class="pill-n">' + countOf(k) + '</span></button>';
+    html += pillHtml(currentCat === k && !currentSub, catColor(k),
+      "switchTab('" + tab + "','" + k + "','')",
+      (meta.emoji||'') + ' ' + esc(meta.label||k) +
+      ' <span class="pill-n">' + countOf(k) + '</span>');
   }
 
-  // 子分类（选中某类后才有）
-  if (currentTab !== 'all') {
-    const subs = [...new Set(allNotices.filter(n => n.category === currentTab)
-                                       .map(n => n.sub_label).filter(Boolean))];
+  // 板块标签（新闻网/学工/教务…），选中细分类且确实有多个板块时才出现
+  if (currentCat) {
+    const subs = subKeys(currentCat);
     if (subs.length > 1) {
-      const c = catColor(currentTab);
-      html += '<button class="pill' + (!currentSub ? ' on' : '') + '" style="--pill-c:' + c + '" ' +
-              'onclick="switchTab(\'' + currentTab + '\',\'\')">全部</button>';
+      const c = catColor(currentCat);
+      html += pillHtml(!currentSub, c,
+        "switchTab('" + tab + "','" + currentCat + "','')", '全部');
       for (const s of subs) {
-        html += '<button class="pill' + (currentSub === s ? ' on' : '') + '" style="--pill-c:' + c + '" ' +
-                'onclick="switchTab(\'' + currentTab + '\',\'' + esc(s) + '\')">' + esc(s) + '</button>';
+        html += pillHtml(currentSub === s, c,
+          "switchTab('" + tab + "','" + currentCat + "','" + esc(s) + "')", esc(s));
       }
     }
   }
-  document.getElementById('pillsInner').innerHTML = html;
+  inner.innerHTML = html;
 }
 
 function renderAbout() {
@@ -447,6 +550,16 @@ function renderAbout() {
   el.innerHTML = Object.entries(CATS).map(([k,v]) =>
     '<span class="about-cat">' + (v.emoji||'') + ' ' + esc(v.label||k) + '</span>'
   ).join('');
+
+  // 大分类 → 它包含的细分类，让人一眼看懂分组
+  const gEl = document.getElementById('aboutGroups');
+  if (!gEl) return;
+  gEl.innerHTML = GROUPS.map(g => {
+    const names = (g.categories||[]).map(k => (CATS[k]||{}).label || k);
+    return '<div class="about-group"><span class="ag-name">' +
+           (g.emoji||'') + ' ' + esc(g.label||g.key) + '</span>' +
+           '<span class="ag-cats">' + esc(names.join(' · ')) + '</span></div>';
+  }).join('');
 }
 
 function dateGroups(notices) {
@@ -470,10 +583,61 @@ function dateGroups(notices) {
   return groups;
 }
 
+// ===== Bottom Nav（液态玻璃） =====
+function renderNav() {
+  const bar = document.getElementById('tabBar');
+  const btn = (key, emoji, label) =>
+    '<button class="tab-item" data-key="' + key + '" ' +
+    'onclick="' + (key === 'about' ? "showPage('about')" : "switchTab('" + key + "','','')") + '">' +
+    '<span class="tb-icon">' + emoji + '</span>' +
+    '<span class="tb-label">' + esc(label) + '</span></button>';
+
+  let html = '<span class="tab-blob" id="tabBlob"></span>' + btn('all', '📬', '全部');
+  for (const g of GROUPS) html += btn(g.key, g.emoji || '📌', g.label || g.key);
+  html += btn('about', '⚙', '关于');
+  bar.innerHTML = html;
+  syncNav();
+}
+
+// 高亮当前项，并把玻璃药丸滑过去
+function syncNav() {
+  const bar = document.getElementById('tabBar');
+  const activeKey = currentPage !== 'home' ? 'about' : currentTab;
+  bar.querySelectorAll('.tab-item').forEach(b =>
+    b.classList.toggle('active', b.dataset.key === activeKey));
+  moveBlob();
+}
+
+function moveBlob() {
+  const bar = document.getElementById('tabBar');
+  const blob = document.getElementById('tabBlob');
+  if (!bar || !blob) return;
+  const act = bar.querySelector('.tab-item.active');
+  if (!act || !act.offsetWidth) { blob.style.opacity = '0'; return; }
+  // 首帧不要从最左边滑过来，直接落位
+  if (!blob.dataset.placed) {
+    blob.classList.add('init');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      blob.classList.remove('init');
+      blob.dataset.placed = '1';
+    }));
+  }
+  blob.style.opacity = '1';
+  blob.style.width = act.offsetWidth + 'px';
+  blob.style.transform = 'translateX(' + act.offsetLeft + 'px)';
+}
+
 // ===== Tab & Page =====
-function switchTab(cat, sub) {
-  currentTab = cat; currentSub = sub;
-  render(); showPage('home'); haptic();
+// tab: 'all' 或大分类 key；cat: 细分类 key；sub: 板块标签
+function switchTab(tab, cat, sub) {
+  currentTab = tab || 'all';
+  currentCat = cat || '';
+  currentSub = sub || '';
+  // 先认下「在首页」再 render —— 药丸渲染要看 currentPage 决定显不显示
+  currentPage = 'home';
+  render();
+  showPage('home');
+  haptic();
 }
 
 function toggleCard(card) { card.classList.toggle('expanded'); haptic(); }
@@ -481,16 +645,13 @@ function toggleCard(card) { card.classList.toggle('expanded'); haptic(); }
 function showPage(page) {
   currentPage = page;
   const home = page === 'home';
-  document.getElementById('pillsArea').style.display = home ? '' : 'none';
+  document.getElementById('pillsArea').style.display = pillsVisible() ? '' : 'none';
   document.getElementById('feedArea').style.display = home ? '' : 'none';
   document.getElementById('aboutPage').classList.toggle('show', page === 'about');
-  const map = {nav0: home && currentTab === 'all',
-               nav1: home && currentTab === 'competition',
-               nav2: home && currentTab === 'holiday',
-               nav3: !home};
-  Object.entries(map).forEach(([id, act]) =>
-    document.getElementById(id).classList.toggle('active', act));
+  syncNav();
 }
+
+window.addEventListener('resize', moveBlob);
 
 // ===== Search =====
 function toggleSearch() {
@@ -512,6 +673,7 @@ function doSearch() {
     (n.sub_label||'').toLowerCase().includes(q) ||
     (n.source_tab||'').toLowerCase().includes(q) ||
     (n.summary||'').toLowerCase().includes(q) ||
+    (n.summary_short||'').toLowerCase().includes(q) ||
     ((CATS[n.category]||{}).label||'').includes(q)
   );
   if (!matched.length) {

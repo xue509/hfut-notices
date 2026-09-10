@@ -27,7 +27,8 @@ from pathlib import Path
 import yaml
 
 from scraper import NoticeScraper
-from classifier import NoticeClassifier, CATEGORIES, CATEGORY_ORDER, PUSH_CATEGORIES
+from classifier import (NoticeClassifier, CATEGORIES, CATEGORY_ORDER,
+                        PUSH_CATEGORIES, GROUPS)
 from storage import NoticeStorage
 from wechat_pusher import NoticePusher
 
@@ -94,6 +95,14 @@ def export_app_data(storage: NoticeStorage, config: dict):
         logger.warning("没有需要导出的通知数据")
         return
 
+    # 给每条补 30 字短简介（卡片上显示的那句）。
+    # 在导出时算而不是入库时存 —— 算法改了重跑一次导出就能刷新，
+    # 不用去动数据库。
+    scraper = NoticeScraper()
+    for n in export_notices:
+        n["summary_short"] = scraper._short_summary(
+            n.get("title", ""), n.get("summary", ""))
+
     # 确保 docs 目录存在（GitHub Pages 要求）
     app_dir = Path("docs")
     app_dir.mkdir(exist_ok=True)
@@ -103,11 +112,13 @@ def export_app_data(storage: NoticeStorage, config: dict):
         "updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total": len(export_notices),
         "summary_coverage": f"{sum(1 for n in export_notices if n.get('summary'))}/{len(export_notices)}",
+        "short_coverage": f"{sum(1 for n in export_notices if n.get('summary_short'))}/{len(export_notices)}",
         "categories": {
             k: {"label": v["label"], "emoji": v["emoji"],
                 "color": v["color"], "color_dk": v["color_dk"]}
             for k, v in CATEGORIES.items()
         },
+        "groups": GROUPS,
         "push_categories": PUSH_CATEGORIES,
         "notices": export_notices,
     }

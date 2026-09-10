@@ -447,6 +447,491 @@ class NoticeScraper:
         text = cls._SIGNATURE_RE.sub('', text).strip()
         return text
 
+    # ---- 短简介（卡片上那 30 字） ----
+
+    SHORT_MAX = 30
+    SHORT_MIN = 10
+
+    # 切句见 _split_clauses()：正则做不干净括号配平，改成手动扫。
+    # 句首残留的序号、以及被切在括号里的残渣
+    _ORDINAL_RE = re.compile(r'^[一二三四五六七八九十\d]{1,3}[、.．)）]\s*')
+    _DANGLING_RE = re.compile(r'^[》）)】」』，。、；：]+')
+    # 前导引用块: 「根据《…》（皖招考函〔2026〕122号）精神，」→ 整段删掉
+    _LEAD_CITE_RE = re.compile(
+        r'^(?:根据|按照|依据|为落实|为贯彻)[^，。]{0,80}?'
+        r'(?:精神|要求|规定|办法|方案|通知|意见|条例|法)[，,]?\s*'
+    )
+
+    # 动作词: 这条通知「要你干什么」。带这些词的句子信息量最大。
+    _ACTION_WORDS = (
+        "报名", "申报", "截止", "时间", "地点", "举行", "举办",
+        "开展", "评选", "认定", "发放", "停水", "停电", "开放", "调整",
+        "放假", "考试", "选课", "比赛", "竞赛", "培训", "招聘", "提交",
+        "报送", "受理", "开始", "结束", "安排", "举行", "召开",
+        "举办", "征集", "检修", "施工", "搬迁", "领取", "发放", "公示", "立项",
+    )
+
+    # 虚词收尾 = 话没说完（「…的通知」单挂一句是残的，「…的」更是）。
+    # 注意别把「…评审工作」这类名词短语算进来，它们在中文里能独立成句。
+    _DANGLING_TAIL = "的和与及等或并而为于在对把将向从以如第至到"
+
+    # 从属连词开头 + 没有动作词 = 半截话（「接包河供电公司通知」「经学院推荐」）
+    _SUBORDINATE_RE = re.compile(
+        r'^(?:接|据|经|根据|按照|依据|由于|鉴于|随着|通过|为|为了|兹|现将|现就)')
+
+    # 「现将…通知如下」这类公文体壳子，剥掉才看得见正题
+    _SCAFFOLD_HEAD_RE = re.compile(r'^(?:现将|现就|兹将|特将)\s*')
+    _SCAFFOLD_TAIL_RE = re.compile(
+        r'\s*(?:有关事项|相关事项|有关事宜|相关事宜)?'
+        r'(?:通知|说明|安排|公布|公告|通告)?如下[：:]?$')
+    _SCAFFOLD_TAIL2_RE = re.compile(r'\s*(?:有关事项|相关事项|有关事宜|相关事宜)$')
+
+    # 表格被抽成正文：一堆栏头词摞在一起，没有一句人话
+    _TABLE_JUNK_RE = re.compile(r'工作模块|完成时限|面向对象|项目负责人|主办单位|承办单位|备注')
+
+    # 节标题常常和正文黏成一句（「活动时间主题活动集中在2026年9月实施」
+    # 「学校申报截止日期和材料报送 项目申请人按照…」），读起来像结巴。
+    # 只收几个不会误伤的，剥完还得剩得下东西。
+    _SECTION_HEAD_RE = re.compile(
+        r'^(?:[^\d，。、；：]{0,4})?'
+        r'(?:活动时间|活动主题|活动对象|活动安排|征集截止时间|征集时间|申报截止日期|'
+        r'报送方式|报送时间|报送要求|报名时间|考试时间|比赛时间|参赛对象|'
+        r'组织机构|承办单位|联系方式|联系电话|工作要求|工作内容|项目内容|'
+        r'申报条件|评审程序|资助方向|时间安排|总体要求|评选对象|评选范围)')
+
+    # 开场套话/引用: 「为深入学习贯彻…」「根据《…》（x号）精神，」
+    # 这类开头没有信息量，偏偏公文里最靠前、最容易被选中，必须显式压分。
+    _BOILERPLATE_RE = re.compile(
+        r'^(?:为|根据|按照|依据|为了|为深入|为贯彻|为落实|为认真|为扎实|为切实|为做好|为进一步)'
+        r'[^，。]{0,60}?(?:精神|思想|要求|通知|意见|办法|法规|规定|文件|战略|部署|指示|方案|条例)'
+    )
+    # 纯主题陈述（"为…，现将…"里的前半截），整句只有目的没有动作
+    _PURPOSE_RE = re.compile(r'^(?:为|为了)[^，。]{4,60}$')
+    # 时政套话。「全面落实习近平总书记关于新域新质的重要论述」—— 每篇公文
+    # 都能套上，放哪条通知上都成立，等于没说
+    _XI_RE = re.compile(
+        r'习近平总书记|习近平新时代|党的二十大精神|二十届[一二三四五六七八九十]*中全会|'
+        r'重要论述|重要思想|重要讲话精神')
+    # 流程名词收尾 = 事还没说完（「经个人申报、单位推荐、专家评审」后面
+    # 本该跟「共评出…」）。带数字的除外，那说明结果已经出来了
+    _PROCESS_TAIL_RE = re.compile(
+        r'(?:环节|阶段|程序|流程|评审|推荐|申报|审核|审查|考察|遴选|初评|复评|'
+        r'研究|批准|同意|决定)$')
+    # 以虚词收尾 = 话没说完。「…的精神」「…的水平」「…的使命」
+    _VAGUE_TAIL_RE = re.compile(r'(?:的)?(?:精神|思想|水平|使命|成果|要求|规定|指示|部署)$')
+    # 光秃秃的文号（「（皖教工委函〔2026〕216号）」「（皖教工委函〔2026〕216号）要求」）
+    # 注意文号里常套一层〔〕，内层不能排除
+    _DOCNUM_ONLY_RE = re.compile(r'^[（(【〔][^）)]{2,24}[）)][^，。]{0,8}$')
+    # 网页页脚/工具栏被当成正文抓进来
+    _PAGE_CHROME_RE = re.compile(r'浏览次数|联系我们|版权所有|地址[:：]中国|技术支持')
+    # 结尾客套话。「因停水施工给您带来的不便，敬请谅解」—— 放哪儿都对，
+    # 唯独不说明这条通知要干什么
+    _APOLOGY_RE = re.compile(
+        r'给您带来|给您造成|敬请谅解|敬请理解|感谢您的|感谢您对|由此带来|'
+        r'请予以理解|望谅解|特此通知|特此公告|特此说明')
+    # 正文里只有一句「去哪儿看」的指路语，没有实质内容。
+    # 基金委那批通知正文就这么一句，拿去当简介等于什么都没说
+    _NAV_JUNK_RE = re.compile(
+        r'项目管理-项目指南|见通告原文|详见附件|详见原文|点击查看|见附件')
+
+    @classmethod
+    def _short_summary(cls, title: str, summary: str,
+                       limit: int = SHORT_MAX) -> str:
+        """
+        从正文摘要里摘出 30 字以内、能独立看懂的一句。
+
+        不能直接切前 30 字 —— 会卡在句子中间变成
+        「因翡翠湖校区供水管网损坏，需对部分区域进」这种半截话。
+
+        正文里挑不出人话时（整篇是标题的复述、是张表格、是网页页脚），
+        退回去用标题本身剥壳当简介 —— 卡片上必须有一句，哪怕它
+        只是标题更短的说法。
+        """
+        text = cls._normalize_space(summary or "")
+        digest = cls._title_digest(title, limit)
+
+        # 正文压根没法用：空的、网页页脚、表格栏头摞一起
+        if not text or cls._is_unusable(text):
+            return digest
+
+        if len(text) <= limit and not cls._looks_incomplete(text):
+            return text.rstrip("，。、；： ")
+
+        parts = []
+        for p in cls._split_clauses(text):
+            p = cls._clean_fragment(p)
+            if len(p) < 5:
+                continue
+            # 整句就是标题的复述 —— 基金委那批通告通篇在重复标题。
+            # 这种句子占了名额也带不来信息，直接不要，最后交给标题剥壳。
+            if cls._title_overlap(title, p) >= 0.88:
+                continue
+            parts.append(p)
+        if not parts:
+            return digest
+
+        # 先把每条候选「最终会显示成什么样」定下来：该截的截，截完读不通的
+        # 直接淘汰。只在原文上打分是不够的 ——
+        # 「学校申报截止日期和材料报送项目申请人按照指南要求填报申请书及」
+        # 原文是个完整句，截完就成了残句。
+        cands = []
+        for idx, p in enumerate(parts):
+            shown = p if len(p) <= limit else cls._clip(p, limit)
+            shown = shown.strip("，。、；： ")
+            if len(shown) < 5 or cls._looks_incomplete(shown):
+                continue
+            cands.append((idx, p, shown))
+        if not cands:
+            return digest
+
+        # 全篇都没提动作词时只能矮子里拔将军；只要有一句提了，就优先那句 ——
+        # 「安徽省市场监督管理局、安徽省精神文明建设办公室」这种名单，
+        # 读完也不知道要干什么
+        has_action = any(any(w in p for w in cls._ACTION_WORDS)
+                         for _, p, _ in cands)
+
+        def score(cand):
+            idx, part, _ = cand
+            has = any(w in part for w in cls._ACTION_WORDS)
+            overlap = cls._title_overlap(title, part)
+            s = 1.2 / (idx + 1)                        # 越靠前越可能是主旨
+            s += sum(0.6 for w in cls._ACTION_WORDS if w in part)
+            s += overlap * 1.4
+            if len(part) <= limit:                     # 不用截断的整句加分
+                s += 0.4
+            if cls._BOILERPLATE_RE.match(part):
+                s -= 2.5                               # 开场套话，压到底
+            if cls._PURPOSE_RE.match(part):
+                s -= 1.5                               # 只讲目的不讲事
+            if cls._XI_RE.search(part):
+                s -= 2.0                               # 时政套话，哪条通知都能套
+            # 开头就是时间的句子（"X月X日，…"），信息量通常不如点明事件的那句，
+            # 而卡片上方已经显示了日期
+            if re.match(r'^[\d一二三四五六七八九十]{1,4}[年月日]', part) and \
+                    len(part) > limit:
+                s -= 0.8
+            # 以虚词收尾 = 话没说完（「…的重要使命」）
+            if cls._VAGUE_TAIL_RE.search(part):
+                s -= 1.0
+            # 半截话（「接包河供电公司通知」「经学院推荐」）。这句往往是全篇第一句，
+            # 靠位置分压过后面那些真正说事的句子，必须扣回来。
+            if cls._looks_incomplete(part):
+                s -= 1.8
+            # 只是部分复述标题：扣分但不判死 —— 复述里带的新信息（几点停水、
+            # 哪个校区）有时候正是最该看的那句
+            if overlap >= 0.6:
+                s -= 0.8
+            # 开头就是日期（「特定于2026年10月16日」），日期卡片上已经有了
+            if re.match(r'^(?:特定于|定于|兹定于)', part):
+                s -= 1.2
+            if has_action and not has:
+                s -= 1.5
+            # 几乎全是数字的日子（「2026年9月-12月」）—— 日期卡片上已经有一份了
+            if part and sum(c.isdigit() for c in part) / len(part) >= 0.5:
+                s -= 1.5
+            return s
+
+        ranked = max(cands, key=score)
+        # 挑中的是「前言」里那种讲意义的漂亮话：没有动作词、没有具体数字、
+        # 也跟标题对不上号（「切实保障国家各项资助政策和措施真正落实到家庭
+        # 经济困难学生身上」「推动学生宪法宣传教育常态化、长效化」）。
+        # 读完不知道这条通知要他干什么，不如回去用标题剥壳
+        if not any(w in ranked[1] for w in cls._ACTION_WORDS) \
+                and not any(c.isdigit() for c in ranked[1]) \
+                and cls._title_overlap(title, ranked[1]) < 0.5:
+            return digest or ranked[2]
+        # 一条能看的都没有 —— 回去用标题剥壳，别硬凑
+        if score(ranked) < 0.5:
+            return digest
+        # 选中的得靠截断才塞得下，而它本来就是标题的换皮说法 ——
+        # 那就直接用剥了壳的标题，至少断在干净的地方
+        if len(ranked[1]) > limit and \
+                cls._title_overlap(title, ranked[1]) >= 0.6:
+            return digest
+        # 截断截在了词中间。正文里挑不出别的，就用标题剥壳顶上 ——
+        # 「…并提交至所」这种半截话比复述标题难看得多
+        if digest and not cls._cut_clean(ranked[1], limit):
+            return digest
+        return ranked[2]
+
+    @classmethod
+    def _is_unusable(cls, text: str) -> bool:
+        """正文压根不是人话：网页页脚、表格栏头"""
+        if cls._PAGE_CHROME_RE.search(text) and len(text) < 200:
+            return True
+        # 表格抽出来的文字：栏头词摞一起，几乎不断句
+        if cls._TABLE_JUNK_RE.search(text) and text.count("。") <= 1:
+            return True
+        return False
+
+    @classmethod
+    def _looks_incomplete(cls, part: str) -> bool:
+        """这句能不能独立站住 —— 虚词收尾、或从属连词开头又不带动作"""
+        if not part:
+            return True
+        if part[-1] in cls._DANGLING_TAIL:
+            return True
+        # 「…在合肥工业大学举办第三届」—— 届次后面本该跟活动名，断了就是个悬念
+        if re.search(r'第[一二三四五六七八九十百\d]{1,4}[届次期批讲]$', part):
+            return True
+        # 从属句读起头就是半句，除非它自己带动作词
+        # （「经研究，决定于…举办…」是完整的，「经个人申请、学院推荐等环节」不是）
+        if cls._SUBORDINATE_RE.match(part) and \
+                not any(w in part for w in cls._ACTION_WORDS):
+            return True
+        # 从属句读起头 + 流程名词收尾 + 通篇没数字 = 结果还没说出来
+        if cls._SUBORDINATE_RE.match(part) and not any(c.isdigit() for c in part) \
+                and cls._PROCESS_TAIL_RE.search(part):
+            return True
+        return False
+
+    @classmethod
+    def _title_digest(cls, title: str, limit: int = SHORT_MAX) -> str:
+        """
+        正文指不上时，把标题剥掉公文壳当简介。
+
+        「关于做好2026-2027学年研究生学业奖学金评审工作的通知」
+        → 「做好2026-2027学年研究生学业奖学金评审工作」
+
+        比重复标题短一截，扫一眼就知道这条讲什么。剥完太短说明
+        标题本身就是光杆（「公示」），那就没有简介可言。
+        """
+        t = cls._normalize_space(title or "")
+        if not t:
+            return ""
+        t = re.sub(r'^关于', '', t)
+        t = re.sub(r'[（(][^）)]{0,24}[）)]$', '', t)          # 尾部补充说明
+        # 「…的通知」剥掉是净赚，但「…申报指南征求意见」里的「意见」是动词
+        # 的宾语，剥了就成了「…申报指南征求」—— 半截话
+        t = re.sub(
+            r'(?<!征求)(?<!反馈)(?<!提出)(?<!报送)(?<!征集)'
+            r'(?:的)?(?:通知|通告|公示|公告|决定|意见|函|批复)$', '', t)
+        t = t.strip("，。、；： ")
+        if len(t) < 6:
+            return ""
+        if len(t) > limit:
+            # 公文标题是「限定语 + 正题」，正题永远在后面。超长时把前面那截
+            # 限定语丢掉，从正题起算 ——「基金委发布2026年度交叉科学部关于
+            # 征集重大非共识项目立项建议」→ 去掉「基金委发布」正好卡进 30 字，
+            # 比在「立项建」处硬切好看得多。挑最长的那个能装下的后缀
+            for m in re.finditer(r'[：:——]|”|(?:发布|印发|转发|关于)', t):
+                tail = t[m.end():].lstrip("—－：: ")
+                if 8 <= len(tail) <= limit and _balanced(tail):
+                    return tail
+        return cls._clip(t, limit)
+
+    @staticmethod
+    def _normalize_space(text: str) -> str:
+        """
+        归一化 HTML 提取留下的空格。
+
+        抽取正文时用 separator=" " 拼接，会把「2026年度」拆成「2026 年度」、
+        「9月30日」拆成「9 月 30 日」，白白吃掉字符额度。中文里的空格基本
+        都是噪音，只保留中文和英文/数字之间的那一个。
+        """
+        text = re.sub(r'\s+', ' ', text).strip()
+        # 「17:00 二、报送方式」——节标题前的空格是原文里唯一的断句线索，
+        # 后面的规则会把它抹掉，先换成硬换行存着
+        text = re.sub(r'(?<=[\d。；：！？]) (?=[一二三四五六七八九十]{1,3}[、.．])',
+                      '\n', text)
+        # 数字/英文 与 中文 之间本来就不该有空格（公文排版不会这么写）
+        text = re.sub(r'(?<=[一-鿿]) (?=[\dA-Za-z])', '', text)
+        text = re.sub(r'(?<=[\dA-Za-z]) (?=[一-鿿])', '', text)
+        # 中文之间、数字内部的零散空格
+        text = re.sub(r'(?<=[一-鿿]) (?=[一-鿿])', '', text)
+        text = re.sub(r'(?<=\d) (?=\d)', '', text)
+        # 「2026 -2027」「10月16日 — 18日」：破折号两边的空格
+        text = re.sub(r'(?<=[\d一-鿿]) (?=[-—－~～至])', '', text)
+        text = re.sub(r'(?<=[-—－~～]) (?=[\d一-鿿])', '', text)
+        text = re.sub(r'\s*([，。、；：！？（）《》“”])\s*', r'\1', text)
+        return text.strip()
+
+    @staticmethod
+    def _split_clauses(text: str) -> list:
+        """
+        括号感知的切句。
+
+        正则做不干净：`根据《…考试报名》（皖招考函〔2026〕122号）精神，现…`
+        里的逗号在书名号/括号内，用 lookahead 判断配平很容易误伤。
+        直接扫一遍，只在括号外切。
+
+        切点: 。！？； 换行 | 括号外的逗号 | 「一、」「1.」这类小标题序号
+        """
+        OPEN, CLOSE = "《（(【〔", "》）》】〕"
+        out, buf, depth = [], [], 0
+        i, n = 0, len(text)
+
+        while i < n:
+            ch = text[i]
+
+            if ch in OPEN:
+                depth += 1
+            elif ch in CLOSE:
+                depth = max(0, depth - 1)
+
+            # 小标题序号前断开（「一、」「3.」），但别把「2026.09」切开，
+            # 也别把「大学英语四、六级」里的「四、」当序号 —— 序号只会出现在
+            # 句末标点/换行/数字之后，或者整段的开头
+            if depth == 0 and (ch in "一二三四五六七八九十" or ch.isdigit()):
+                prev = text[i - 1] if i > 0 else ""
+                if not prev or prev in "。；：！？\n" or prev.isdigit() or \
+                        not "".join(buf).strip():
+                    m = re.match(
+                        r'[一二三四五六七八九十]{1,3}[、.．]|\d{1,2}[、.．](?!\d)',
+                        text[i:])
+                    if m and len("".join(buf).strip()) >= 5:
+                        out.append("".join(buf))
+                        buf = []
+                        i += m.end()
+                        continue
+
+            if depth == 0 and ch in "。！？；!?;\n":
+                buf.append(ch)
+                out.append("".join(buf))
+                buf = []
+                i += 1
+                continue
+
+            if depth == 0 and ch == "，":
+                cur = "".join(buf)
+                # 逗号后内容太短就先不断，免得切出一地碎片
+                if len(text[i + 1:].split("，")[0]) >= 4 and len(cur.strip()) >= 5:
+                    out.append(cur)
+                    buf = []
+                    i += 1
+                    continue
+
+            buf.append(ch)
+            i += 1
+
+        if "".join(buf).strip():
+            out.append("".join(buf))
+        return out
+
+    @classmethod
+    def _clean_fragment(cls, part: str) -> str:
+        """
+        收拾切分残留。
+
+        - 「（一）征集时间征集截止时间2026年9月30日17:00」→ 去掉序号标记
+        - 「开展…检查工作（一）」→ 序号悬挂在末尾，说明正文被切掉了，丢弃
+        - 「时间安排2026年9月-12月三…」→ 取后半段
+        - 「根据《…》（皖招考函〔2026〕122号）精神，」→ 纯引用，正文不在这
+        - 「现将有关事项通知如下」→ 公文体壳子，剥掉
+
+        注意别把「（一）征集时间」这种正常节标题当成硬切残渣 ——
+        序号后面有内容是正常的，只有悬挂在末尾才是残缺。
+        """
+        part = part.strip().strip("，。、；： ")
+        part = cls._ORDINAL_RE.sub('', part)
+
+        # 以序号标记收尾 = 正文被切掉了，不可读
+        if re.search(r'[（(][一二三四五六七八九十\d]{1,3}[)）]\s*$', part):
+            return ""
+
+        # 以序号标记开头 = 节标题，去掉标记取内容
+        part = re.sub(r'^[（(][一二三四五六七八九十\d]{1,3}[)）]\s*', '', part)
+
+        # 前导引用块、被切在括号里的残渣
+        part = cls._LEAD_CITE_RE.sub('', part)
+        part = cls._DANGLING_RE.sub('', part)
+
+        # 公文体壳子
+        part = cls._SCAFFOLD_HEAD_RE.sub('', part)
+        part = cls._SCAFFOLD_TAIL_RE.sub('', part)
+        part = cls._SCAFFOLD_TAIL2_RE.sub('', part)
+        part = part.strip("，。、；： ")
+
+        # 黏在正文前面的节标题（「活动时间主题活动集中在…」→「主题活动集中在…」）
+        m = cls._SECTION_HEAD_RE.match(part)
+        if m and len(part) - m.end() >= 8:
+            head = part[:m.end()]
+            rest = part[m.end():].lstrip("和及与等的地")
+            # 剥完只剩个日期（「征集截止时间2026年9月30日17:00」），说明标题
+            # 本身就是全部信息 —— 剥了等于把「什么时候截止」扔了
+            if not (_is_bare_date(rest) and
+                    any(w in head for w in cls._ACTION_WORDS)):
+                # 「评选对象1. 纳入…」剥完还挂着个序号，顺手带走
+                part = cls._ORDINAL_RE.sub('', rest)
+        if len(part) < 5:
+            return ""
+
+        # 前面挂着一个词（「时间安排2026年…」）就把它去掉。但要是剥完只剩个
+        # 光日期（「征集截止时间2026年9月30日17:00」），说明前面那截才是信息
+        m = re.match(r'^[^\d一二三四五六七八九十]{2,10}?(\d{4}年.*)$', part)
+        if m and len(part) <= cls.SHORT_MAX and not _is_bare_date(m.group(1)):
+            part = m.group(1)
+
+        if part.endswith(("…", "...", "等", "及", "和", "与", "、")):
+            return ""
+        # 数字收尾 + 提到年份 = 多半切在「2026年10」这种地方。但 17:00 不算
+        if re.search(r'(?<![:：\d])[\d一二三四五六七八九十]{1,2}$', part) and "年" in part:
+            return ""
+
+        # 光秃秃的文号、网页页脚、结尾客套话、指路语
+        if cls._DOCNUM_ONLY_RE.match(part) or cls._PAGE_CHROME_RE.search(part) \
+                or cls._APOLOGY_RE.search(part) or cls._NAV_JUNK_RE.search(part):
+            return ""
+        # 被切在引号/书名号里的残渣（「讲宪法”活动的相关通知要求」）—— 引号
+        # 落单就说明起点是从中间抠出来的
+        if not _balanced(part):
+            return ""
+        return part.strip("，。、；： ")
+
+    @staticmethod
+    def _title_overlap(title: str, part: str) -> float:
+        """句子里有多少 2 字词出现在标题中（0~1 归一）"""
+        title = title or ""
+        grams = {part[i:i + 2] for i in range(len(part) - 1)}
+        if not grams:
+            return 0.0
+        hit = sum(1 for g in grams if g in title)
+        return hit / len(grams)
+
+    @staticmethod
+    def _clip(text: str, limit: int) -> str:
+        """
+        整句太长时的退路。
+
+        先保证不切在书名号/括号里面 —— 「为贯彻落实《中华人民共和国科学技术普及法》
+        《全民科学素质行动」这种断法比切短更难看。再在 limit 内找最后一个
+        并列符号断开：「、」「暨」连接的是并列成分，从那里断比从逗号断
+        更不容易缺胳膊少腿。实在没有合适断点就硬切。
+        """
+        head = _bracket_safe(text, limit)
+        # 「—」「－」不当断点：CET－SET 这类缩写会被拦腰截断。
+        # 「和」「及」排最后：并列成分从这里断开风险略大，所以和「、」分开处理，
+        # 只在断点靠后（≥60%）时才认
+        for sep in ("、", "；", "：", "暨"):
+            cut = head.rfind(sep)
+            if cut < int(limit * 0.5):
+                continue
+            out = head[:cut].rstrip("，。、；：—－ ")
+            if _balanced(out):
+                return out
+        for sep in ("，", "和", "及"):
+            cut = head.rfind(sep)
+            if cut < int(limit * 0.6):
+                continue
+            out = head[:cut].rstrip("，。、；： ")
+            if len(out) >= 8 and _balanced(out):
+                return out
+        return head.rstrip("，。、；： ")
+
+    @staticmethod
+    def _cut_clean(text: str, limit: int) -> bool:
+        """
+        _clip 是不是断在了干净的地方。
+
+        断点在并列/句读符号上，或退到书名号之前，都算干净；硬切在第 30 个字
+        上（「…并提交至所」「…检查和2026年」）就是断在词中间，读着像乱码。
+        """
+        if len(text) <= limit:
+            return True
+        shown = NoticeScraper._clip(text, limit)
+        nxt = text[len(shown):len(shown) + 1]
+        return nxt in "，。、；：！？暨《（(【〔“"
+
     def fetch_recent_notices(self, days: int = 7, pages: int = 3) -> list[dict]:
         """获取最近 N 天内的通知"""
         from datetime import datetime, timedelta
@@ -457,6 +942,41 @@ class NoticeScraper:
         recent = [n for n in all_notices if n["date"] >= cutoff]
         logger.info(f"最近 {days} 天内共 {len(recent)} 条通知")
         return recent
+
+
+_BRACKET_OPEN = "《（(【〔“"
+
+
+_BARE_DATE_RE = re.compile(r'[\d年月日\-—－~～:：.至到\s]+')
+
+
+def _is_bare_date(text: str) -> bool:
+    """整段就是个日期/时间段，没别的信息（「2026年9月30日17:00」「9月-12月」）"""
+    return bool(text) and bool(_BARE_DATE_RE.fullmatch(text))
+
+
+def _balanced(text: str) -> bool:
+    """括号/引号是否配对"""
+    if sum(text.count(c) for c in _BRACKET_OPEN) != \
+            sum(text.count(c) for c in "》）》】〕”"):
+        return False
+    return True
+
+
+def _bracket_safe(text: str, limit: int) -> str:
+    """
+    截到 limit 个字符，但不能把书名号/括号切一半。
+
+    「为贯彻落实《中华人民共和国科学技术普及法》《全民科学素质行动」——
+    最后一截断在《》里，读起来像乱码。宁可退回到那个括号之前。
+    """
+    head = text[:limit]
+    if _balanced(head):
+        return head
+    for i in range(len(head) - 1, -1, -1):
+        if text[i] in _BRACKET_OPEN:
+            return text[:i]
+    return head
 
 
 def _append_unique(notices: list, seen_links: set, new_notices: list):

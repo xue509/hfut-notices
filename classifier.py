@@ -54,6 +54,65 @@ PUSH_CATEGORIES = [k for k, v in CATEGORIES.items() if v["push"]]
 CATEGORY_ORDER = list(CATEGORIES.keys())
 
 
+# ============================================================
+# 大分组（前端底部导航用）
+#
+# 8 个细分类对手机底栏来说太多了，按「你会拿它干什么」归成 4 组:
+#   学习 —— 跟学业直接相关
+#   生活 —— 影响日常起居
+#   学工 —— 学生事务办理
+#   公告 —— 结果与公示，看的多办的少
+#
+# 「其他」是兜底桶，塞进「公告」—— 公告栏本来就是什么都贴的地方。
+#
+# 与 CATEGORIES 一样，这是唯一权威来源，前端从 data.json 读，
+# 别在 index.html 里再写一份。
+#
+# 注意: 每个 category 必须且只能出现在一个组里，
+#       漏掉的类别在前端就点不到了（有自检，见 __main__）。
+# ============================================================
+GROUPS = [
+    {"key": "study",  "label": "学习", "emoji": "📚",
+     "categories": ["research", "academic", "competition"]},
+    {"key": "life",   "label": "生活", "emoji": "🏠",
+     "categories": ["support", "holiday"]},
+    {"key": "affair", "label": "学工", "emoji": "🎯",
+     "categories": ["student"]},
+    {"key": "bulletin", "label": "公告", "emoji": "📢",
+     "categories": ["notice", "other"]},
+]
+
+GROUP_ORDER = [g["key"] for g in GROUPS]
+
+
+def group_of(category: str) -> str:
+    """类别属于哪个大组（找不到返回空串）"""
+    for g in GROUPS:
+        if category in g["categories"]:
+            return g["key"]
+    return ""
+
+
+def _validate_groups():
+    """自检: 8 个类别必须不重不漏地分进各组"""
+    seen = [c for g in GROUPS for c in g["categories"]]
+    missing = [c for c in CATEGORY_ORDER if c not in seen]
+    dup = [c for c in seen if seen.count(c) > 1]
+    unknown = [c for c in seen if c not in CATEGORY_ORDER]
+    problems = []
+    if missing:
+        problems.append(f"未分组: {missing}")
+    if dup:
+        problems.append(f"重复分组: {sorted(set(dup))}")
+    if unknown:
+        problems.append(f"组里有未知类别: {unknown}")
+    if problems:
+        raise ValueError("GROUPS 配置有误 — " + "；".join(problems))
+
+
+_validate_groups()
+
+
 class NoticeClassifier:
 
     # ============================================================

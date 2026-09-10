@@ -7,7 +7,8 @@ from datetime import datetime
 from pathlib import Path
 
 from scraper import NoticeScraper
-from classifier import NoticeClassifier, CATEGORIES, CATEGORY_ORDER, PUSH_CATEGORIES
+from classifier import (NoticeClassifier, CATEGORIES, CATEGORY_ORDER,
+                        PUSH_CATEGORIES, GROUPS)
 from wechat_pusher import PushPlusPusher, format_push_message
 
 DATA_FILE = Path("docs/data.json")
@@ -156,22 +157,32 @@ def main():
     all_notices = [n for n in all_notices if n]
     all_notices.sort(key=lambda x: x["date"], reverse=True)
 
+    # 卡片上那句 30 字短简介，导出时现算 —— 算法改了重跑一次就能刷新，
+    # 不用回填历史数据。
+    for n in all_notices:
+        n["summary_short"] = scraper._short_summary(
+            n.get("title", ""), n.get("summary", ""))
+
     summary_cov = sum(1 for n in all_notices if n.get("summary"))
+    short_cov = sum(1 for n in all_notices if n.get("summary_short"))
     output = {
         "updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total": len(all_notices),
         "summary_coverage": f"{summary_cov}/{len(all_notices)}",
+        "short_coverage": f"{short_cov}/{len(all_notices)}",
         "categories": {
             k: {"label": v["label"], "emoji": v["emoji"],
                 "color": v["color"], "color_dk": v["color_dk"]}
             for k, v in CATEGORIES.items()
         },
+        "groups": GROUPS,
         "push_categories": PUSH_CATEGORIES,
         "notices": all_notices,
     }
     save_data(output)
     save_seen(seen)
-    print(f"Saved {len(all_notices)} notices ({summary_cov} with summary). Done!")
+    print(f"Saved {len(all_notices)} notices "
+          f"({summary_cov} with summary, {short_cov} with short). Done!")
 
     # ---- 周报（周一） ----
     # 放在保存之后，这样刚抓到的通知也算进本周
