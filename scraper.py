@@ -512,6 +512,13 @@ class NoticeScraper:
     _XI_RE = re.compile(
         r'习近平总书记|习近平新时代|党的二十大精神|二十届[一二三四五六七八九十]*中全会|'
         r'重要论述|重要思想|重要讲话精神')
+    # 对着收件人喊话：「请有关单位仔细研读通知」。说的是要读者怎么样，
+    # 不是一个字的内容
+    _PLEASE_RE = re.compile(r'^请(?:各|有关|相关|全校|广大|于|勿|注意)')
+    # 通用办事流程话术：「材料报送 项目申请人按照指南要求填报申请书及附件
+    # 材料并提交至所在学院」。基金委那批通知正文只剩这一句，五条通知一字不差
+    # —— 它说的是怎么交材料，不是这条通知讲什么，还不如标题剥壳
+    _GENERIC_BODY_RE = re.compile(r'材料报送|填报申请书|提交至所在|按照指南要求|报送方式')
     # 流程名词收尾 = 事还没说完（「经个人申报、单位推荐、专家评审」后面
     # 本该跟「共评出…」）。带数字的除外，那说明结果已经出来了
     _PROCESS_TAIL_RE = re.compile(
@@ -529,10 +536,19 @@ class NoticeScraper:
     _APOLOGY_RE = re.compile(
         r'给您带来|给您造成|敬请谅解|敬请理解|感谢您的|感谢您对|由此带来|'
         r'请予以理解|望谅解|特此通知|特此公告|特此说明')
+    # 括注的简称：「（以下简称CET）」「（CET－SET）」。公文里满篇都是，
+    # 30 字的额度经不起这么花 —— 剥掉不影响阅读。但「（第一批）」
+    # 「（合肥校区）」是实义，不能碰，所以只收简称和纯字母的
+    _ALIAS_PAREN_RE = re.compile(
+        r'[（(](?:以下简称|简称|下称)[^）)]{0,12}[）)]'
+        r'|[（(][A-Za-z][A-Za-z0-9\-－]{1,10}[）)]')
+    # 「四、六级」「一、二级」—— 这里的顿号是编号的一部分，不是并列断点
+    _ENUM_DUN_RE = re.compile(r'[一二三四五六七八九十\d]、[一二三四五六七八九十\d]')
     # 正文里只有一句「去哪儿看」的指路语，没有实质内容。
     # 基金委那批通知正文就这么一句，拿去当简介等于什么都没说
     _NAV_JUNK_RE = re.compile(
-        r'项目管理-项目指南|见通告原文|详见附件|详见原文|点击查看|见附件')
+        r'项目管理-项目指南|见通告原文|详见附件|详见原文|点击查看|见附件|'
+        r'菜单栏中查看|菜单栏查看')
 
     @classmethod
     def _short_summary(cls, title: str, summary: str,
@@ -562,9 +578,11 @@ class NoticeScraper:
             p = cls._clean_fragment(p)
             if len(p) < 5:
                 continue
-            # 整句就是标题的复述 —— 基金委那批通告通篇在重复标题。
-            # 这种句子占了名额也带不来信息，直接不要，最后交给标题剥壳。
-            if cls._title_overlap(title, p) >= 0.88:
+            # 大半句都是标题的原话 —— 基金委那批通告通篇在重复标题。
+            # 读者刚看完标题，这种句子再占一行也是白占（真需要它的内容时，
+            # 下面还有标题剥壳兜着，信息一点不少）。宁可让位给正文里
+            # 那些「笔试 12 月 12 日举行」的干货。
+            if cls._title_overlap(title, p) >= 0.72:
                 continue
             parts.append(p)
         if not parts:
@@ -576,11 +594,15 @@ class NoticeScraper:
         # 原文是个完整句，截完就成了残句。
         cands = []
         for idx, p in enumerate(parts):
-            shown = p if len(p) <= limit else cls._clip(p, limit)
+            if len(p) <= limit:
+                src = shown = p
+            else:
+                src = cls._strip_redundant_head(p, title)
+                shown = cls._clip(src, limit)
             shown = shown.strip("，。、；： ")
             if len(shown) < 5 or cls._looks_incomplete(shown):
                 continue
-            cands.append((idx, p, shown))
+            cands.append((idx, p, shown, src))
         if not cands:
             return digest
 
@@ -588,10 +610,10 @@ class NoticeScraper:
         # 「安徽省市场监督管理局、安徽省精神文明建设办公室」这种名单，
         # 读完也不知道要干什么
         has_action = any(any(w in p for w in cls._ACTION_WORDS)
-                         for _, p, _ in cands)
+                         for _, p, _, _ in cands)
 
         def score(cand):
-            idx, part, _ = cand
+            idx, part, _, _ = cand
             has = any(w in part for w in cls._ACTION_WORDS)
             overlap = cls._title_overlap(title, part)
             s = 1.2 / (idx + 1)                        # 越靠前越可能是主旨
@@ -599,12 +621,19 @@ class NoticeScraper:
             s += overlap * 1.4
             if len(part) <= limit:                     # 不用截断的整句加分
                 s += 0.4
+            # 「积极组织征集」这种六字短语，动词齐全但没有宾语，读完等于没读。
+            # 能当简介的短句至少也得有十来个字
+            if len(part) < 10:
+                s -= 1.5
             if cls._BOILERPLATE_RE.match(part):
                 s -= 2.5                               # 开场套话，压到底
             if cls._PURPOSE_RE.match(part):
                 s -= 1.5                               # 只讲目的不讲事
             if cls._XI_RE.search(part):
                 s -= 2.0                               # 时政套话，哪条通知都能套
+            # 「请有关单位仔细研读通知」—— 对着收件人喊话，不是内容
+            if cls._PLEASE_RE.match(part):
+                s -= 1.5
             # 开头就是时间的句子（"X月X日，…"），信息量通常不如点明事件的那句，
             # 而卡片上方已经显示了日期
             if re.match(r'^[\d一二三四五六七八九十]{1,4}[年月日]', part) and \
@@ -636,10 +665,19 @@ class NoticeScraper:
         # 也跟标题对不上号（「切实保障国家各项资助政策和措施真正落实到家庭
         # 经济困难学生身上」「推动学生宪法宣传教育常态化、长效化」）。
         # 读完不知道这条通知要他干什么，不如回去用标题剥壳
+        # 挑中的是「前言」里那种讲意义的漂亮话：没有动作词、没有具体数字、
+        # 也跟标题对不上号（「切实保障国家各项资助政策和措施真正落实到家庭
+        # 经济困难学生身上」「推动学生宪法宣传教育常态化、长效化」）。
+        # 读完不知道这条通知要他干什么，不如回去用标题剥壳
         if not any(w in ranked[1] for w in cls._ACTION_WORDS) \
                 and not any(c.isdigit() for c in ranked[1]) \
                 and cls._title_overlap(title, ranked[1]) < 0.5:
             return digest or ranked[2]
+        # 挑中的是通用办事流程话术，又不带任何日期/数字 —— 十几条通知共用
+        # 同一句，标题剥壳反而能说清这是哪条
+        if digest and cls._GENERIC_BODY_RE.search(ranked[1]) \
+                and not any(c.isdigit() for c in ranked[1]):
+            return digest
         # 一条能看的都没有 —— 回去用标题剥壳，别硬凑
         if score(ranked) < 0.5:
             return digest
@@ -650,7 +688,7 @@ class NoticeScraper:
             return digest
         # 截断截在了词中间。正文里挑不出别的，就用标题剥壳顶上 ——
         # 「…并提交至所」这种半截话比复述标题难看得多
-        if digest and not cls._cut_clean(ranked[1], limit):
+        if digest and not cls._cut_clean(ranked[2], ranked[3]):
             return digest
         return ranked[2]
 
@@ -832,6 +870,21 @@ class NoticeScraper:
         # 以序号标记开头 = 节标题，去掉标记取内容
         part = re.sub(r'^[（(][一二三四五六七八九十\d]{1,3}[)）]\s*', '', part)
 
+        # 括注简称先剥掉，别占字数
+        part = cls._ALIAS_PAREN_RE.sub('', part)
+
+        # 节标题和正文黏在一起：「一、重大非共识项目资助定位重大非共识项目
+        # 资助科研人员从事…」—— 正文开头和标题重了那么几个字，重复点之前
+        # 一律是标题。_SECTION_HEAD_RE 只认得几个常见栏头，这个是兜底
+        for n in range(4, 13):
+            if len(part) < 2 * n:
+                break
+            head = part[:n]
+            again = part.find(head, n)
+            if 0 < again <= n + 6:
+                part = part[again:]
+                break
+
         # 前导引用块、被切在括号里的残渣
         part = cls._LEAD_CITE_RE.sub('', part)
         part = cls._DANGLING_RE.sub('', part)
@@ -878,6 +931,23 @@ class NoticeScraper:
             return ""
         return part.strip("，。、；： ")
 
+    @classmethod
+    def _strip_redundant_head(cls, text: str, title: str) -> str:
+        """
+        开头的学年/学期限定语如果标题里已经写了，先摘掉。
+
+        「2026年下半年全国大学英语四、六级笔试和口试将分别于12月12日…」
+        —— 标题里就有「2026年下半年」，卡片上方正显示着，重复它等于白花
+        6 个字。摘掉之后省下的额度刚好够把考试日期装进来。
+        """
+        m = re.match(r'(?:\d{4}\s*年\s*(?:上|下)半年|\d{4}\s*[-—－]\s*\d{4}\s*学年'
+                     r'|\d{4}\s*学年|\d{4}\s*年)', text)
+        if m and m.group(0).replace(" ", "") in (title or "").replace(" ", ""):
+            rest = text[m.end():].lstrip("，。、；： ")
+            if len(rest) >= 10:
+                return rest
+        return text
+
     @staticmethod
     def _title_overlap(title: str, part: str) -> float:
         """句子里有多少 2 字词出现在标题中（0~1 归一）"""
@@ -903,7 +973,7 @@ class NoticeScraper:
         # 「和」「及」排最后：并列成分从这里断开风险略大，所以和「、」分开处理，
         # 只在断点靠后（≥60%）时才认
         for sep in ("、", "；", "：", "暨"):
-            cut = head.rfind(sep)
+            cut = _last_sep(head, sep)
             if cut < int(limit * 0.5):
                 continue
             out = head[:cut].rstrip("，。、；：—－ ")
@@ -919,18 +989,20 @@ class NoticeScraper:
         return head.rstrip("，。、；： ")
 
     @staticmethod
-    def _cut_clean(text: str, limit: int) -> bool:
+    def _cut_clean(shown: str, source: str) -> bool:
         """
         _clip 是不是断在了干净的地方。
 
-        断点在并列/句读符号上，或退到书名号之前，都算干净；硬切在第 30 个字
-        上（「…并提交至所」「…检查和2026年」）就是断在词中间，读着像乱码。
+        断点落在并列/句读符号上（也就是下一句正是从这个符号起头的），或者
+        退到了书名号之前，都算干净；硬切在第 30 个字上（「…并提交至所」
+        「…检查和2026年」）就是断在词中间，读着像乱码。
+
+        要拿真正被截的那个串来比 —— 候选可能先被摘掉了重复的学期限定语。
         """
-        if len(text) <= limit:
+        if len(shown) >= len(source):
             return True
-        shown = NoticeScraper._clip(text, limit)
-        nxt = text[len(shown):len(shown) + 1]
-        return nxt in "，。、；：！？暨《（(【〔“"
+        nxt = source[len(shown):len(shown) + 1]
+        return not nxt or nxt in "，。、；：！？暨和及《（(【〔“"
 
     def fetch_recent_notices(self, days: int = 7, pages: int = 3) -> list[dict]:
         """获取最近 N 天内的通知"""
@@ -945,6 +1017,22 @@ class NoticeScraper:
 
 
 _BRACKET_OPEN = "《（(【〔“"
+
+
+def _last_sep(head: str, sep: str) -> int:
+    """
+    找 head 里最后一个能当断点的 sep。
+
+    「、」要排掉「四、六级」这种编号 —— 在那里断开就成了
+    「2026年下半年全国大学英语四」。找不到返回 -1。
+    """
+    pos = head.rfind(sep)
+    while pos >= 0:
+        if not (sep == "、" and pos > 0
+                and NoticeScraper._ENUM_DUN_RE.match(head, pos - 1)):
+            return pos
+        pos = head.rfind(sep, 0, pos)
+    return -1
 
 
 _BARE_DATE_RE = re.compile(r'[\d年月日\-—－~～:：.至到\s]+')

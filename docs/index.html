@@ -101,15 +101,16 @@ a { color:var(--brand); text-decoration:none }
 .feed { padding:0 16px }
 .card { background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:10px; box-shadow:var(--shadow-md); cursor:pointer; transition:all .2s cubic-bezier(.4,0,.2,1); position:relative; overflow:hidden; border:1px solid var(--border); border-left:3px solid var(--cat-c, var(--brand)) }
 .card:active { transform:scale(.975); box-shadow:var(--shadow-sm) }
-.card-head { display:flex; align-items:flex-start; gap:10px; padding-right:20px }
+.card-head { display:flex; align-items:flex-start; gap:10px }
 .card-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; margin-top:1px; background:var(--cat-tint, var(--brand-tint)) }
 .card-title { font-size:14px; font-weight:600; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color:var(--text) }
 .card-meta { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap }
 .card-date { font-size:11px; color:var(--text3); font-weight:500 }
 .card-tag { display:inline-block; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:600; letter-spacing:.3px; background:var(--cat-tint, var(--brand-tint)); color:var(--cat-c, var(--brand)) }
 .card-source { font-size:10px; color:var(--text3) }
-.card-chevron { position:absolute; right:14px; top:50%; transform:translateY(-50%); width:20px; height:20px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text3); transition:transform .25s }
-.card.expanded .card-chevron { transform:translateY(-50%) rotate(90deg); background:var(--brand); color:#fff }
+/* 展开箭头跟在标签行末尾，不做绝对定位 —— 悬在卡片中间会压住正文 */
+.card-chevron { margin-left:auto; width:18px; height:18px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--text3); flex-shrink:0; transition:transform .25s, background .25s, color .25s }
+.card.expanded .card-chevron { transform:rotate(90deg); background:var(--brand); color:#fff }
 /* 简介常显（一行），展开后显示全文 */
 .card-summary { font-size:12px; color:var(--text2); line-height:1.6; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
 .card.expanded .card-summary { display:block; -webkit-line-clamp:unset }
@@ -468,9 +469,9 @@ function cardHtml(n, withDetail) {
       '<span class="card-date">📆 ' + esc(n.date || '') + '</span>' +
       (sub ? '<span class="card-tag">' + esc(sub) + '</span>' : '') +
       '<span class="card-source">' + esc(n.source_tab||'') + '</span>' +
+      '<span class="card-chevron">▶</span>' +
     '</div>' +
     (brief ? '<div class="card-summary">' + esc(brief) + '</div>' : '') +
-    '<div class="card-chevron">▶</div>' +
     '<div class="card-detail">' +
       '<div class="detail-row"><span class="dl">🏷️</span>' +
         (meta.label || '其他') + (sub ? ' · ' + esc(sub) : '') + '</div>' +
