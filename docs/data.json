@@ -1,7 +1,7 @@
 {
-  "updated": "2026-09-11 08:28:16",
+  "updated": "2026-09-11 13:59:07",
   "total": 577,
-  "summary_coverage": "529/577",
+  "summary_coverage": "533/577",
   "short_coverage": "577/577",
   "categories": {
     "competition": {
@@ -428,7 +428,8 @@
       "sub_label": "学科竞赛",
       "category": "competition",
       "pushed": false,
-      "summary_short": "组织参加2026年安徽省大学生“AI+信息素养”大赛"
+      "summary_short": "组织参加2026年安徽省大学生“AI+信息素养”大赛",
+      "summary": "We're sorry but 图书馆管理服务门户 doesn't work properly without JavaScript enabled. Please enable it to continue."
     },
     {
       "title": "关于做好党校第76期学员班招生工作的通知",
@@ -631,7 +632,8 @@
       "sub_label": "校园物业",
       "category": "support",
       "pushed": false,
-      "summary_short": "翡翠湖校区图书馆维修改造及分区开放"
+      "summary_short": "翡翠湖校区图书馆维修改造及分区开放",
+      "summary": "We're sorry but 图书馆管理服务门户 doesn't work properly without JavaScript enabled. Please enable it to continue."
     },
     {
       "title": "2026年9月学生工作月历",
@@ -855,7 +857,8 @@
       "sub_label": "校园物业",
       "category": "support",
       "pushed": false,
-      "summary_short": "翡翠湖校区图书馆全封闭维修改造"
+      "summary_short": "翡翠湖校区图书馆全封闭维修改造",
+      "summary": "We're sorry but 图书馆管理服务门户 doesn't work properly without JavaScript enabled. Please enable it to continue."
     },
     {
       "title": "关于合肥校区2026级研究生新生入学体检工作的通知",
@@ -4091,7 +4094,8 @@
       "sub_label": "",
       "category": "other",
       "pushed": false,
-      "summary_short": "“爱就释手让书旅行”图书漂流倡议书"
+      "summary_short": "“爱就释手让书旅行”图书漂流倡议书",
+      "summary": "We're sorry but 图书馆管理服务门户 doesn't work properly without JavaScript enabled. Please enable it to continue."
     },
     {
       "title": "合肥校区2026年学生工作助理招聘公告",
