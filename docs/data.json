@@ -1,8 +1,8 @@
 {
-  "updated": "2026-09-11 02:11:50",
-  "total": 576,
-  "summary_coverage": "528/576",
-  "short_coverage": "576/576",
+  "updated": "2026-09-11 08:28:16",
+  "total": 577,
+  "summary_coverage": "529/577",
+  "short_coverage": "577/577",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,18 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于对申报2025年度高级职称的教师进行教学效果测评有关事宜的通知",
+      "date": "2026-09-11",
+      "link": "https://jwc.hfut.edu.cn/info2025.jsp?urltype=news.NewsContentUrl&wbtreeid=1346&wbnewsid=6075",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月11日",
+      "sub_label": "",
+      "category": "other",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
     {
       "title": "关于组织参观2026世界制造业大会的通知",
       "date": "2026-09-10",
