@@ -1,8 +1,8 @@
 {
-  "updated": "2026-09-17 02:34:16",
-  "total": 597,
-  "summary_coverage": "554/597",
-  "short_coverage": "597/597",
+  "updated": "2026-09-17 09:03:41",
+  "total": 603,
+  "summary_coverage": "560/603",
+  "short_coverage": "603/603",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -97,6 +97,42 @@
   ],
   "notices": [
     {
+      "title": "国家重点研发计划：“地球观测与导航”重点专项 2026年度项目申报指南建议征求意见",
+      "date": "2026-09-17",
+      "link": "http://kyy.hfut.edu.cn/2026/0917/c3310a323330/page.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月17日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "中国科学院对 “地球观测与导航”重点专项2026年度项目申报指南建议向社会征求意见。请有意反馈的老师认真研读指南内容，请于 9 月 19 日 下午 1 7 点之前 ，将意见建议电子版（填写模板见附件）发送至邮箱： kyyzrb@hfut.edu.cn。 请登录系统，在 “公开公示-指南征求意见”菜单栏中查看指南征求意见材料。 原文通知链接： https://service.most.gov.cn/…",
+      "summary_short": "重点专项2026年度项目申报指南建议征求意见"
+    },
+    {
+      "title": "关于合肥工业大学屯溪路校区道路拓宽工程临时封闭施工的通知",
+      "date": "2026-09-17",
+      "link": "https://jjc.hfut.edu.cn/info/1025/1479.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月17日",
+      "sub_label": "校园物业",
+      "category": "support",
+      "pushed": false,
+      "summary": "为推进道路拓宽改造工程，改善校园通行条件，需在聚英路东段组织开展机动车道、非机动车道、人行道施工作业。 现将道路临时封闭相关事宜通知如下： 一、施工分段范围 聚英路：俭园食堂南侧—慈园食堂南侧，道路总长约160米； 中兴路：至善路口—聚英路口，道路总长约320米。 二、封闭管制时间 2026年9月18日-9月20日 封闭区域 三、交通管制规定 施工期间，封闭路段禁止机动车、非机动车及行人通行，未封…",
+      "summary_short": "需在聚英路东段组织开展机动车道、非机动车道、人行道施工作业"
+    },
+    {
+      "title": "关于做好2026年本科生国家奖助学金评选工作的通知",
+      "date": "2026-09-17",
+      "link": "https://xgb.hfut.edu.cn/info/1059/20017.htm",
+      "source_tab": "学工部",
+      "raw_date": "2026-09-17",
+      "sub_label": "奖助学金",
+      "category": "student",
+      "pushed": false,
+      "summary": "根据教育部全国学生资助管理中心《关于下达 202 6 年中央高校国家奖助学金名额的通知》（教助中心〔 202 6 〕 23 号）《关于做好 202 6 年普通高校本专科生 及研究生 国家奖学金评审工作的通知》教助中心〔 202 6 〕 6 号及相关文件精神，现就学校 202 6 年本科生国家奖学金、国家励志奖学金和国家助学金（以下简称国家奖助学金）评选工作通知如下： 一、评审原则 各学院要坚持公开…",
+      "summary_short": "学校2026年本科生国家奖学金"
+    },
+    {
       "title": "关于开展2026年廉洁知识问答工作的通知",
       "date": "2026-09-16",
       "link": "http://jiwei.hfut.edu.cn/2026/0915/c595a323313/page.htm",
@@ -143,6 +179,42 @@
       "pushed": false,
       "summary": "接包河供电公司通知，因上级电源设备故障，包河供电公司计划对包河变 22#专线和包河16#专线进行检修。 检修期间，临时停电范围涵盖我校屯溪路校区部分区域。为减少对我校师生工作、生活的影响，经协商，将临时停电时间定为 9月19日（星期六）凌晨01:30至03:30 。具体停电范围如下： 一、教学办公区 科技楼、材料楼、升华楼（部分）、纬地楼（部分）、结构实验室、材料成型实验室、水利实验室、三立苑、热…",
       "summary_short": "检修期间，临时停电范围涵盖我校屯溪路校区部分区域"
+    },
+    {
+      "title": "关于做好2025-2026学年研究生“三好学生”“优秀三好学生”“优秀学生干部”评选工作的通知",
+      "date": "2026-09-16",
+      "link": "https://xgb.hfut.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbtreeid=1061&wbnewsid=20016",
+      "source_tab": "学工部",
+      "raw_date": "2026-09-16",
+      "sub_label": "评优评奖",
+      "category": "student",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
+    {
+      "title": "关于做好2026级研究生国家助学金管理工作的通知",
+      "date": "2026-09-16",
+      "link": "https://xgb.hfut.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbtreeid=1061&wbnewsid=20015",
+      "source_tab": "学工部",
+      "raw_date": "2026-09-16",
+      "sub_label": "奖助学金",
+      "category": "student",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
+    {
+      "title": "关于做好2026年研究生国家奖学金评审工作的通知",
+      "date": "2026-09-16",
+      "link": "https://xgb.hfut.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbtreeid=1061&wbnewsid=20014",
+      "source_tab": "学工部",
+      "raw_date": "2026-09-16",
+      "sub_label": "奖助学金",
+      "category": "student",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
     },
     {
       "title": "关于转发“中国高校产学研创新基金-数智创新与数字健康专项”的通知",
