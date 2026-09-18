@@ -1,8 +1,8 @@
 {
-  "updated": "2026-09-18 08:38:46",
-  "total": 603,
-  "summary_coverage": "560/603",
-  "short_coverage": "603/603",
+  "updated": "2026-09-18 14:01:18",
+  "total": 604,
+  "summary_coverage": "561/604",
+  "short_coverage": "604/604",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,18 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于征集工信部产业发展中心相关领域专家的通知",
+      "date": "2026-09-18",
+      "link": "https://gfzby.hfut.edu.cn/2026/0918/c2118a323352/page.psp",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月18日",
+      "sub_label": "",
+      "category": "notice",
+      "pushed": false,
+      "summary": "提示：您当前ip并非校内地址，该信息仅允许校内地址访问 首页 关闭此页",
+      "summary_short": "征集工信部产业发展中心相关领域专家"
+    },
     {
       "title": "国家重点研发计划：“地球观测与导航”重点专项 2026年度项目申报指南建议征求意见",
       "date": "2026-09-17",
