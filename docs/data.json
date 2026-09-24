@@ -1,8 +1,8 @@
 {
-  "updated": "2026-09-23 22:36:04",
-  "total": 634,
-  "summary_coverage": "591/634",
-  "short_coverage": "634/634",
+  "updated": "2026-09-24 02:21:28",
+  "total": 637,
+  "summary_coverage": "594/637",
+  "short_coverage": "637/637",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,42 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "合肥校区2026年“十一”假期食堂停伙、复伙通知",
+      "date": "2026-09-24",
+      "link": "https://zwb.hfut.edu.cn/info/1029/6471.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月24日",
+      "sub_label": "餐饮服务",
+      "category": "support",
+      "pushed": false,
+      "summary": "国庆期间食堂就餐人数将会大幅度减少，学校计划利用这段时间对部分食堂设备进行维修与保养。因此，假期里，合肥两校区食堂将进行轮休。具体时间安排如下： 校区 食 堂 停伙时间 复伙时间 备注 屯 溪 路 校 区 德 园 9月30日晚餐后 10月7日早餐 根据学生返校情况，适时提前开放食堂 馨 园 正常营业 明 园 正常营业 俭 园 正常营业 沁 园 9月30日晚餐后 10月7日中餐 贤 园 9月30日晚…",
+      "summary_short": "学校计划利用这段时间对部分食堂设备进行维修与保养"
+    },
+    {
+      "title": "关于某刀具专题第一批科研项目深化论证的预通知",
+      "date": "2026-09-24",
+      "link": "http://gfzby.hfut.edu.cn/2026/0923/c2118a323439/page.psp",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月24日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "提示：您当前ip并非校内地址，该信息仅允许校内地址访问 首页 关闭此页",
+      "summary_short": "某刀具专题第一批科研项目深化论证的预"
+    },
+    {
+      "title": "关于某技术合作科研第一批项目指南的通知",
+      "date": "2026-09-24",
+      "link": "http://gfzby.hfut.edu.cn/2026/0924/c2118a323450/page.psp",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月24日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "提示：您当前ip并非校内地址，该信息仅允许校内地址访问 首页 关闭此页",
+      "summary_short": "某技术合作科研第一批项目指南"
+    },
     {
       "title": "关于做好2026年中秋、国庆期间廉洁自律工作的通知",
       "date": "2026-09-23",
