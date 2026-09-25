@@ -1,8 +1,8 @@
 {
-  "updated": "2026-09-25 02:37:48",
-  "total": 642,
-  "summary_coverage": "599/642",
-  "short_coverage": "642/642",
+  "updated": "2026-09-25 09:14:57",
+  "total": 645,
+  "summary_coverage": "602/645",
+  "short_coverage": "645/645",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,42 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "国家重点研发计划：“重大灾害事故风险防控与应急救援科技支撑”重点专项 2026年度项目申报指南征求意见",
+      "date": "2026-09-25",
+      "link": "https://kyy.hfut.edu.cn/2026/0925/c3310a323469/page.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月25日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "应急管理部就“十五五”国家重点研发计划“重大灾害事故风险防控与应急救援科技支撑”重点专项2026年度项目申报指南（征求意见稿）向社会征求意见。修改意见请按附件《申报指南征求意见反馈-模板.docx》填写，于9月29日下午17点之前发至电子邮箱：kyyzrb@hfut.edu.cn。 请登录系统，在“公开公示-指南征求意见”菜单栏中查看指南征求意见材料。 原文通知链接：https://service…",
+      "summary_short": "重点专项2026年度项目申报指南征求意见"
+    },
+    {
+      "title": "国家重点研发计划：“量智融合关键技术研究”重点专项 2026年度项目申报指南征求意见",
+      "date": "2026-09-25",
+      "link": "https://kyy.hfut.edu.cn/2026/0925/c3310a323468/page.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月25日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "北京市人民政府就“十五五”国家重点研发计划“量智融合关键技术研究”重点专项2026年度项目申报指南（征求意见稿）向社会征求意见。修改意见请按附件《申报指南征求意见反馈-模板.docx》填写，于9月27日下午17点之前发至电子邮箱：kyyzrb@hfut.edu.cn。 请登录系统，在“公开公示-指南征求意见”菜单栏中查看指南征求意见材料。 原文通知链接：https://service.most.g…",
+      "summary_short": "重点专项2026年度项目申报指南征求意见"
+    },
+    {
+      "title": "国家重点研发计划：“公共卫生与主动健康”重点专项 2026年度项目申报指南征求意见",
+      "date": "2026-09-25",
+      "link": "https://kyy.hfut.edu.cn/2026/0925/c3310a323467/page.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年09月25日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "国家疾控局就国家重点研发计划“公共卫生与主动健康”重点专项2026年度项目申报指南向社会公开征求意见。修改意见请按附件《申报指南征求意见反馈-模板.docx》填写，于9月27日下午17点之前发至电子邮箱：kyyzrb@hfut.edu.cn。 请登录系统，在“公开公示-指南征求意见”菜单栏中查看指南征求意见材料。 原文通知链接：https://service.most.gov.cn/kjjh_tz…",
+      "summary_short": "于9月27日下午17点之前发至电子邮箱"
+    },
     {
       "title": "合肥校区2026年“十一”假期食堂停伙、复伙通知",
       "date": "2026-09-24",
