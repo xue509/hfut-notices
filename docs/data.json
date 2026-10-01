@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-01 00:57:35",
-  "total": 665,
-  "summary_coverage": "621/665",
-  "short_coverage": "665/665",
+  "updated": "2026-10-01 08:05:02",
+  "total": 666,
+  "summary_coverage": "622/666",
+  "short_coverage": "666/666",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,18 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "国家科技重大专项：移动信息网络专项发布2026年度第三批项目申报指南 （公开竞争）",
+      "date": "2026-10-01",
+      "link": "https://kyy.hfut.edu.cn/2026/1001/c3310a323569/page.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年10月01日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "移动信息网络国家科技重大专项实施管理办公室发布移动信息网络国家科技重大专项2026年度第三批项目申报指南（公开竞争）。请各位老师仔细研读申报通知和指南，明确申请资格和形式审查条件要求等，积极联系相关单位联合申报。现将有关事宜通知如下： 一、项目申报要求 1. 项目申报单位根据指南相关申报要求，通过国家科技管理信息系统（http://service.most.gov.cn）填写并 一次性提交项目正式…",
+      "summary_short": "积极联系相关单位联合申报"
+    },
     {
       "title": "关于做好2026-2027学年第一学期本科生实习教学工作的通知",
       "date": "2026-09-30",
