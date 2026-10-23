@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-22 22:56:13",
-  "total": 757,
-  "summary_coverage": "707/757",
-  "short_coverage": "756/757",
+  "updated": "2026-10-23 02:40:54",
+  "total": 758,
+  "summary_coverage": "708/758",
+  "short_coverage": "757/758",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,18 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "2027年寒假高层次国际化人才培养创新实践项目境外实践训练营通知",
+      "date": "2026-10-23",
+      "link": "https://international.hfut.edu.cn/info/1026/6446.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年10月23日",
+      "sub_label": "假期安排",
+      "category": "holiday",
+      "pushed": false,
+      "summary": "为拓展学生国际视野，提升跨文化交流能力，搭建优质海外学习平台，我校将于 2027年寒假面向在校生推出高层次国际化人才培养创新实践项目境外实践训练营项目。现将有关事项通知如下： 一、 项目介绍 序号 项目名称 参访安排 地点 时间（项目周期 / 线上 / 境外线下） 费用 证书颁发单位 1 联合国欧洲双枢纽 ·职业启航实训营 参访联合国维也纳办事处（ UNOV）、全面禁止核试验条约组织（CTBTO）…",
+      "summary_short": "2027年寒假高层次国际化人才培养创新实践项目境外实践训练营"
+    },
     {
       "title": "关于申报2027年内地与港澳高等学校师生交流计划项目的通知",
       "date": "2026-10-22",
