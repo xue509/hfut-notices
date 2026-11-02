@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-02 08:41:52",
-  "total": 798,
-  "summary_coverage": "748/798",
-  "short_coverage": "796/798",
+  "updated": "2026-11-02 19:57:02",
+  "total": 799,
+  "summary_coverage": "749/799",
+  "short_coverage": "797/799",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -215,6 +215,18 @@
       "pushed": false,
       "summary": "一、项目基本情况 项目名称： 六安路菜市场 2027年-2029年保洁服务单位采购 预算金额： 5.6万元/年 服务内容：六安路菜市场道路保洁面积约 980平方米，项目服务方负责每日对道路及商铺门前进行不间断保洁，每日不间断对垃圾进行分类。并做好极端天气应急管理、保洁服务整体方案、油污清洁专项方案、垃圾清运与分类方案，保障项目服务质量。其他具体要求,详见采购文件。 供应商资格要求：具有物业服务企业…",
       "summary_short": "六安路菜市场2027年-2029年保洁服务单位采购"
+    },
+    {
+      "title": "关于开展部分科级岗位选任工作的通知",
+      "date": "2026-11-02",
+      "link": "https://zzb.hfut.edu.cn/nry.jsp?urltype=news.NewsContentUrl&wbtreeid=1068&wbnewsid=3138",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月02日",
+      "sub_label": "",
+      "category": "other",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您没有访问当前栏目的权限,如需访问请登录webvpn，地址https://webvpn.hfut.edu.cn/login。",
+      "summary_short": "开展部分科级岗位选任工作"
     },
     {
       "title": "关于遴选校级实验室安全督查员的通知",
