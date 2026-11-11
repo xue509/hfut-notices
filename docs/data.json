@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-11 00:22:41",
-  "total": 817,
-  "summary_coverage": "766/817",
-  "short_coverage": "815/817",
+  "updated": "2026-11-11 08:42:59",
+  "total": 818,
+  "summary_coverage": "766/818",
+  "short_coverage": "816/818",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,17 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于征集某技术研发科研项目指南需求的通知",
+      "date": "2026-11-11",
+      "link": "http://wzqpt.hfut.edu.cn/_s85/2026/1111/c2118a324443/page.psp",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月11日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary_short": "征集某技术研发科研项目指南需求"
+    },
     {
       "title": "关于2026全国颠覆性技术创新大赛智能网联新能源汽车锦标赛报名的通知",
       "date": "2026-11-10",
