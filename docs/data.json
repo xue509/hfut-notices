@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-12 05:01:42",
-  "total": 818,
-  "summary_coverage": "766/818",
-  "short_coverage": "816/818",
+  "updated": "2026-11-12 14:21:09",
+  "total": 821,
+  "summary_coverage": "769/821",
+  "short_coverage": "819/821",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,42 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于对合肥校区二次供水设施进行清洗消毒的通知",
+      "date": "2026-11-12",
+      "link": "https://zwb.hfut.edu.cn/info/1029/6519.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月12日",
+      "sub_label": "水电保障",
+      "category": "support",
+      "pushed": false,
+      "summary": "为保障校园生活用水安全，总务部拟于 11 月 16 日（星期一） 08:30-17:30对屯溪路校区和翡翠湖校区的二次供水设施进行集中清洗与消毒作业。 清洗消毒期间采用常压供水 ，高层用户（五楼及以上）的用水压力会降低或出现短暂停水情况，低层用户用水影响较小。主要受影响区域与楼宇： 一、屯溪路校区各学生公寓楼、纬地楼、格物楼、昇华楼、工程管理与智能制造研究中心、逸夫楼、科技楼、图书馆等楼宇的高层用…",
+      "summary_short": "高层用户（五楼及以上）的用水压力会降低或出现短暂停水情况"
+    },
+    {
+      "title": "关于开展2026—2027学年第二学期本科教材选用工作的通知",
+      "date": "2026-11-12",
+      "link": "https://jwc.hfut.edu.cn/info2025.jsp?urltype=news.NewsContentUrl&wbtreeid=1345&wbnewsid=6177",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月12日",
+      "sub_label": "教学运行",
+      "category": "academic",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
+    {
+      "title": "关于开展2026年下半年本科教材编写审核工作的通知",
+      "date": "2026-11-12",
+      "link": "https://jwc.hfut.edu.cn/info2025.jsp?urltype=news.NewsContentUrl&wbtreeid=1345&wbnewsid=6176",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月12日",
+      "sub_label": "教学运行",
+      "category": "academic",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
     {
       "title": "关于征集某技术研发科研项目指南需求的通知",
       "date": "2026-11-11",
