@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-15 22:21:17",
-  "total": 826,
-  "summary_coverage": "774/826",
-  "short_coverage": "824/826",
+  "updated": "2026-11-16 03:57:57",
+  "total": 829,
+  "summary_coverage": "777/829",
+  "short_coverage": "827/829",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,42 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于开展2026-2027学年第一学期期中教学检查的通知",
+      "date": "2026-11-16",
+      "link": "http://jpzx.hfut.edu.cn/info.jsp?urltype=news.NewsContentUrl&wbtreeid=1021&wbnewsid=1317",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月16日",
+      "sub_label": "教学运行",
+      "category": "academic",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
+    {
+      "title": "关于国家留学基金委2027年瑞士互换奖学金项目的申报通知",
+      "date": "2026-11-16",
+      "link": "https://international.hfut.edu.cn/info/1026/6504.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月16日",
+      "sub_label": "项目申报",
+      "category": "research",
+      "pushed": false,
+      "summary": "根据国家留学基金管理委员会 2027年瑞士互换奖学金项目遴选工作安排，我校即日起启动该项目校内申报工作。现将有关事项通知如下： 一、项目简介 根据中国与瑞士互换奖学金交流计划，双方每年互换奖学金留学人员，前往对方国家学习或研修。 项目详情链接： https://www.csc.edu.cn/chuguo/s/4315 二、选派专业、类别及资助内容 1.选派学科、专业领域：不限，重点支持医药化工、医…",
+      "summary_short": "我校即日起启动该项目校内申报工作"
+    },
+    {
+      "title": "2027年美国中央密苏里大学本硕直通奖学金项目报名通知",
+      "date": "2026-11-16",
+      "link": "https://international.hfut.edu.cn/info/1026/6503.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月16日",
+      "sub_label": "奖助学金",
+      "category": "student",
+      "pushed": false,
+      "summary": "为鼓励和支持学校优秀学生出国（境）学习深造，提升人才国际化素养，学校与美国中央密苏里大学（University of Central Missouri, UCM）中国项目办公室协商一致，以全额奖学金或全球合作伙伴奖学金的方式，为学校优秀学子提供本硕直通奖学金项目，具体事宜通知如下： 一、学校简介 美国中央密苏里大学（University of Central Missouri, UCM）创建于18…",
+      "summary_short": "2027年美国中央密苏里大学本硕直通奖学金项目报名"
+    },
     {
       "title": "国家重点研发计划:“重大需求导向的数学理论及应用”等重点专项2026年度项目申报指南",
       "date": "2026-11-13",
