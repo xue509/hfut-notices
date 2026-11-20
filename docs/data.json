@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-19 22:53:22",
-  "total": 843,
-  "summary_coverage": "791/843",
-  "short_coverage": "841/843",
+  "updated": "2026-11-20 05:00:22",
+  "total": 844,
+  "summary_coverage": "792/844",
+  "short_coverage": "842/844",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,18 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于开展本科课程教材指定与审核工作的通知",
+      "date": "2026-11-20",
+      "link": "https://jwc.hfut.edu.cn/info2025.jsp?urltype=news.NewsContentUrl&wbtreeid=1345&wbnewsid=6182",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月20日",
+      "sub_label": "教学运行",
+      "category": "academic",
+      "pushed": false,
+      "summary": "系统提示 抱歉 可能是由下列问题导致的： 您无权访问此页面",
+      "summary_short": "系统提示抱歉可能是由下列问题导致的：您无权访问此页面"
+    },
     {
       "title": "关于开展2026年度无偿献血活动的通知",
       "date": "2026-11-19",
