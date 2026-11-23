@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-22 23:02:30",
-  "total": 844,
-  "summary_coverage": "792/844",
-  "short_coverage": "842/844",
+  "updated": "2026-11-23 04:53:32",
+  "total": 846,
+  "summary_coverage": "794/846",
+  "short_coverage": "844/846",
   "categories": {
     "competition": {
       "label": "竞赛通知",
@@ -96,6 +96,30 @@
     "holiday"
   ],
   "notices": [
+    {
+      "title": "关于开展自设二级学科对应调整工作的通知",
+      "date": "2026-11-23",
+      "link": "https://xkb.hfut.edu.cn/info/1007/1642.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月23日",
+      "sub_label": "教学运行",
+      "category": "academic",
+      "pushed": false,
+      "summary": "根据《关于开展学位授予单位自设二级学科对应调整的通知》（教研司〔 2026 〕 3 号）要求，为规范做好学校自设二级学科（含按照二级学科管理的交叉学科，下同）对应调整工作，优化学科布局，提升研究生培养质量，现就有关工作事项通知如下。 一、调整范围 学校通过“二级学科自主设置信息系统”（以下简称“自设系统”）备案的 2 4 个自设二级学科，含 1 7 个目录外二级学科和 7 个按二级学科管理的交叉学…",
+      "summary_short": "开展自设二级学科对应调整工作"
+    },
+    {
+      "title": "2027年寒假西班牙内布里哈大学Future Minds研学项目通知",
+      "date": "2026-11-23",
+      "link": "https://international.hfut.edu.cn/info/1026/6537.htm",
+      "source_tab": "新闻网",
+      "raw_date": "2026年11月23日",
+      "sub_label": "假期安排",
+      "category": "holiday",
+      "pushed": false,
+      "summary": "为拓展学生国际视野，提升跨文化交流能力，搭建优质海外学习平台，我校 拟于 2027年寒假面向在校生推出西班牙内布里哈大学Future Minds研学项目。现将有关事项通知如下： 一、学校简介 内布里哈大学（ Universidad Nebrija），是位于西班牙首都马德里的一所著名私立大学。学校在U-Ranking 2026西班牙大学排名中就业率指标位列第一，并入选福布斯2026年西班牙十所最佳大…",
+      "summary_short": "2027年寒假西班牙内布里哈大学Future Minds研学"
+    },
     {
       "title": "关于开展本科课程教材指定与审核工作的通知",
       "date": "2026-11-20",
